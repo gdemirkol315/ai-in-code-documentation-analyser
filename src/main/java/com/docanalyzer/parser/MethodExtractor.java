@@ -1,0 +1,137 @@
+package com.docanalyzer.parser;
+
+import com.docanalyzer.model.Javadoc;
+import com.docanalyzer.model.Method;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Extracts methods and their Javadoc comments from parsed Java files.
+ */
+public class MethodExtractor {
+    
+    private static final Logger log = LoggerFactory.getLogger(MethodExtractor.class);
+    
+    private final JavadocParser javadocParser;
+    
+    // Pattern to match method declarations with Javadoc
+    private static final Pattern METHOD_PATTERN = Pattern.compile(
+            "(?:/\\*\\*\\s*(.*?)\\s*\\*/\\s*)?" + // Optional Javadoc comment (group 1)
+            "(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*" + // Optional modifiers (group 2)
+            "(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*" + // More optional modifiers (group 3)
+            "([\\w<>\\[\\].,]+)\\s+" + // Return type (group 4)
+            "(\\w+)\\s*" + // Method name (group 5)
+            "\\(([^)]*)\\)\\s*" + // Parameters (group 6)
+            "(throws\\s+[\\w\\s,.]+)?\\s*" + // Optional throws clause (group 7)
+            "\\{([^{}]*(?:\\{[^{}]*\\}[^{}]*)*)\\}" // Method body with nested braces support (group 8)
+    );
+    
+    // Pattern to match parameters
+    private static final Pattern PARAMETER_PATTERN = Pattern.compile("([\\w<>\\[\\]]+)\\s+(\\w+)");
+    
+    /**
+     * Creates a new MethodExtractor with a JavadocParser.
+     */
+    public MethodExtractor() {
+        this.javadocParser = new JavadocParser();
+    }
+    
+    /**
+     * Extracts all methods from a parsed Java file.
+     * 
+     * @param parsedFile The parsed Java file
+     * @return A list of extracted methods
+     */
+    public List<Method> extractMethods(JavaParser.JavaFile parsedFile) {
+        List<Method> methods = new ArrayList<>();
+        String content = parsedFile.getContent();
+        String packageName = parsedFile.getPackageName();
+        String className = parsedFile.getClassName();
+        String filePath = parsedFile.getFilePath();
+        
+        Matcher methodMatcher = METHOD_PATTERN.matcher(content);
+        
+        while (methodMatcher.find()) {
+            try {
+                String javadocComment = methodMatcher.group(1);
+                String returnType = methodMatcher.group(4);
+                String methodName = methodMatcher.group(5);
+                String parameters = methodMatcher.group(6);
+                String body = methodMatcher.group(8);
+                
+                // Extract parameter information
+                List<String> parameterNames = new ArrayList<>();
+                List<String> parameterTypes = new ArrayList<>();
+                
+                if (parameters != null && !parameters.trim().isEmpty()) {
+                    Matcher paramMatcher = PARAMETER_PATTERN.matcher(parameters);
+                    while (paramMatcher.find()) {
+                        parameterTypes.add(paramMatcher.group(1));
+                        parameterNames.add(paramMatcher.group(2));
+                    }
+                }
+                
+                // Build method signature
+                StringBuilder signatureBuilder = new StringBuilder();
+                if (methodMatcher.group(2) != null) {
+                    signatureBuilder.append(methodMatcher.group(2)).append(" ");
+                }
+                if (methodMatcher.group(3) != null) {
+                    signatureBuilder.append(methodMatcher.group(3)).append(" ");
+                }
+                signatureBuilder.append(returnType).append(" ");
+                signatureBuilder.append(methodName).append("(");
+                
+                for (int i = 0; i < parameterNames.size(); i++) {
+                    if (i > 0) {
+                        signatureBuilder.append(", ");
+                    }
+                    signatureBuilder.append(parameterTypes.get(i)).append(" ").append(parameterNames.get(i));
+                }
+                
+                signatureBuilder.append(")");
+                
+                if (methodMatcher.group(7) != null) {
+                    signatureBuilder.append(" ").append(methodMatcher.group(7));
+                }
+                
+                String signature = signatureBuilder.toString();
+                String fullCode = signature + " {" + body + "}";
+                
+                // Parse Javadoc
+                Javadoc javadoc = null;
+                if (javadocComment != null && !javadocComment.trim().isEmpty()) {
+                    javadoc = javadocParser.parseJavadocComment(javadocComment, parameterNames);
+                }
+                
+                // Create Method object
+                Method method = Method.builder()
+                        .name(methodName)
+                        .signature(signature)
+                        .body("{" + body + "}")
+                        .fullCode(fullCode)
+                        .javadoc(javadoc)
+                        .className(className)
+                        .packageName(packageName)
+                        .filePath(filePath)
+                        .startLine(0) // Line numbers not available with regex approach
+                        .endLine(0)
+                        .parameterNames(parameterNames)
+                        .parameterTypes(parameterTypes)
+                        .returnType(returnType)
+                        .build();
+                
+                methods.add(method);
+            } catch (Exception e) {
+                log.error("Error extracting method: {}", e.getMessage());
+            }
+        }
+        
+        return methods;
+    }
+}

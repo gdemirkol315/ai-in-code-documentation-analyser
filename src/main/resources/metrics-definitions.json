@@ -1,0 +1,40 @@
+{
+  "metrics": [
+    {
+      "name": "Completeness",
+      "description": "Measures how thoroughly the documentation covers all aspects of the method",
+      "guidelines": {
+        "1": "Missing most essential information (parameters, return values, purpose)",
+        "2": "Covers basic purpose but missing details on parameters or returns",
+        "3": "Documents all parameters and returns but lacks exception handling or edge cases",
+        "4": "Comprehensive coverage with minor omissions",
+        "5": "Perfect documentation covering purpose, parameters, returns, exceptions, and edge cases"
+      },
+      "weight": 1.0
+    },
+    {
+      "name": "Clarity",
+      "description": "Evaluates how clear and understandable the documentation is",
+      "guidelines": {
+        "1": "Confusing or misleading documentation",
+        "2": "Unclear wording with ambiguous descriptions",
+        "3": "Mostly clear but with some confusing elements",
+        "4": "Clear and concise with minor improvements possible",
+        "5": "Exceptionally clear, concise, and easy to understand"
+      },
+      "weight": 1.0
+    },
+    {
+      "name": "Code Alignment",
+      "description": "Measures how well the documentation aligns with the actual code",
+      "guidelines": {
+        "1": "Documentation contradicts or misrepresents the code",
+        "2": "Documentation partially aligns with code but has significant discrepancies",
+        "3": "Documentation mostly aligns with code but has minor discrepancies",
+        "4": "Documentation accurately reflects code with very minor omissions",
+        "5": "Documentation perfectly aligns with code, including edge cases and special conditions"
+      },
+      "weight": 1.0
+    }
+  ]
+}
