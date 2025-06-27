@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Main entry point for the documentation analyzer.
@@ -116,20 +117,28 @@ public class Main {
             
             log.info("Extracted {} methods from {} input paths", allMethods.size(), cmdArgs.getInputPaths().size());
             
-            if (allMethods.isEmpty()) {
-                log.error("No methods found in the specified input paths");
+            // Filter methods to only include those with Javadoc
+            List<Method> methodsWithJavadoc = allMethods.stream()
+                    .filter(method -> method.getJavadoc() != null)
+                    .collect(Collectors.toList());
+            
+            log.info("Filtered {} methods with Javadoc from {} total methods (skipped {} methods without Javadoc)", 
+                     methodsWithJavadoc.size(), allMethods.size(), allMethods.size() - methodsWithJavadoc.size());
+            
+            if (methodsWithJavadoc.isEmpty()) {
+                log.error("No methods with Javadoc found in the specified input paths");
                 return;
             }
             
             // Process methods in batches
             BatchProcessor batchProcessor = new BatchProcessor(config);
-            batchProcessor.processBatches(allMethods, guidelines);
+            batchProcessor.processBatches(methodsWithJavadoc, guidelines);
             
             // Generate report
             XMLReportGenerator reportGenerator = new XMLReportGenerator();
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String reportName = "javadoc_analysis_" + timestamp + ".xml";
-            String reportPath = reportGenerator.generateReport(allMethods, config.getOutputPath(), reportName);
+            String reportPath = reportGenerator.generateReport(methodsWithJavadoc, config.getOutputPath(), reportName);
             
             if (reportPath != null) {
                 log.info("Analysis complete. Report generated at: {}", reportPath);
