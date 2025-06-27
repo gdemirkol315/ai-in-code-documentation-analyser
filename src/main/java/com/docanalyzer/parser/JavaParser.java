@@ -26,7 +26,7 @@ public class JavaParser {
     private static final Pattern PACKAGE_PATTERN = Pattern.compile("package\\s+([\\w.]+)\\s*;");
     
     // Pattern to match class declaration
-    private static final Pattern CLASS_PATTERN = Pattern.compile("(public|private|protected)?\\s*(class|interface|enum)\\s+(\\w+)");
+    private static final Pattern CLASS_PATTERN = Pattern.compile("^\\s*(public|private|protected)?\\s*(class|interface|enum)\\s+(\\w+)", Pattern.MULTILINE);
     
     /**
      * Parses a Java source file.

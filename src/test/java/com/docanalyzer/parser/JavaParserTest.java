@@ -65,18 +65,25 @@ public class JavaParserTest {
         // Then
         assertEquals(2, result.size());
         
+        // Debug: Print parsed files to understand what's being parsed
+        result.forEach(file -> {
+            System.out.println("Parsed file: " + file.getClassName() + " in package: " + file.getPackageName());
+        });
+        
         // Verify first file
         JavaParser.JavaFile file1 = result.stream()
                 .filter(f -> f.getClassName().equals("Calculator"))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new AssertionError("Calculator class not found in parsed results. Found classes: " + 
+                    result.stream().map(JavaParser.JavaFile::getClassName).toList()));
         assertEquals("com.example", file1.getPackageName());
         
         // Verify second file
         JavaParser.JavaFile file2 = result.stream()
                 .filter(f -> f.getClassName().equals("StringUtils"))
                 .findFirst()
-                .orElseThrow();
+                .orElseThrow(() -> new AssertionError("StringUtils class not found in parsed results. Found classes: " + 
+                    result.stream().map(JavaParser.JavaFile::getClassName).toList()));
         assertEquals("com.example.util", file2.getPackageName());
     }
     
