@@ -21,14 +21,7 @@ public class MethodExtractor {
     
     // Pattern to match method declarations with Javadoc
     private static final Pattern METHOD_PATTERN = Pattern.compile(
-            "(?:/\\*\\*\\s*(.*?)\\s*\\*/\\s*)?" + // Optional Javadoc comment (group 1)
-            "(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*" + // Optional modifiers (group 2)
-            "(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*" + // More optional modifiers (group 3)
-            "([\\w<>\\[\\].,]+)\\s+" + // Return type (group 4)
-            "(\\w+)\\s*" + // Method name (group 5)
-            "\\(([^)]*)\\)\\s*" + // Parameters (group 6)
-            "(throws\\s+[\\w\\s,.]+)?\\s*" + // Optional throws clause (group 7)
-            "\\{([^{}]*(?:\\{[^{}]*\\}[^{}]*)*)\\}" // Method body with nested braces support (group 8)
+            "(?s)(/\\*\\*.*?\\*/)\\s*(?:(?!class|interface|enum)[^\\S\\r\\n]*\\n)*[^\\S\\r\\n]*(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*([\\w<>\\[\\].,]+)\\s+(\\w+)\\s*\\(([^)]*)\\)\\s*(throws\\s+[\\w\\s,.]+)?\\s*\\{([^{}]*(?:\\{[^{}]*\\}[^{}]*)*)\\}"
     );
     
     // Pattern to match parameters
@@ -59,6 +52,9 @@ public class MethodExtractor {
         while (methodMatcher.find()) {
             try {
                 String javadocComment = methodMatcher.group(1);
+                if (javadocComment != null){
+                    javadocComment = stripUntilMethodJavadoc(javadocComment);
+                }
                 String returnType = methodMatcher.group(4);
                 String methodName = methodMatcher.group(5);
                 String parameters = methodMatcher.group(6);
@@ -134,4 +130,38 @@ public class MethodExtractor {
         
         return methods;
     }
-}
+
+    /**
+     * This method was introduced to handle the unnecessarly taken string for the case when class, interface or enum
+     * have general javadoc. Only method javadoc is relevant for the tool. It could not be handled with regex
+     *
+     * @param input string that will be handled for javadoc search
+     * @return method javadoc string without including the general javadoc for class, interface or enum
+     */
+
+    private String stripUntilMethodJavadoc(String input) {
+        // Match all Javadoc comments
+        String javadocPattern = "/\\*\\*.*?\\*/";
+        Pattern pattern = Pattern.compile(javadocPattern, Pattern.DOTALL);
+        Matcher matcher = pattern.matcher(input);
+
+        int count = 0;
+        int secondJavadocStart = -1;
+
+        while (matcher.find()) {
+            count++;
+            if (count == 2) {
+                secondJavadocStart = matcher.start();
+                break;
+            }
+        }
+
+        // If there are at least two Javadocs, remove everything before the second
+        if (count >= 2 && secondJavadocStart != -1) {
+            return input.substring(secondJavadocStart);
+        }
+
+        // Otherwise, return the original input
+        return input;
+        }
+    }

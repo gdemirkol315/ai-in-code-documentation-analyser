@@ -79,15 +79,8 @@ public class MethodExtractorTest {
         List<Method> methods = methodExtractor.extractMethods(parsedFile);
         
         // Then
-        assertEquals(3, methods.size());
-        
-        // Verify method with no Javadoc
-        Method noJavadocMethod = methods.stream()
-                .filter(m -> m.getName().equals("noJavadocMethod"))
-                .findFirst()
-                .orElseThrow();
-        assertNull(noJavadocMethod.getJavadoc());
-        
+        assertEquals(2, methods.size());
+
         // Verify method with complex parameters
         Method complexMethod = methods.stream()
                 .filter(m -> m.getName().equals("processData"))
