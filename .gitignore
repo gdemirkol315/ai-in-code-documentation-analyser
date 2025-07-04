@@ -23,7 +23,6 @@ logs/
 Thumbs.db
 
 # Application-specific files
-output/
 *.xml.bak
 
 # Configuration with sensitive information
