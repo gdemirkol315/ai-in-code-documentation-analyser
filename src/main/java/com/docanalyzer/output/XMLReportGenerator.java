@@ -106,34 +106,7 @@ public class XMLReportGenerator {
         writeSimpleElement(writer, "total-methods", String.valueOf(totalMethods), 4);
         writeSimpleElement(writer, "methods-with-metrics", String.valueOf(methodsWithMetrics), 4);
         writeSimpleElement(writer, "average-score", String.format("%.2f", averageScore), 4);
-        
-        // Score distribution
-        writer.writeCharacters("    ");
-        writer.writeStartElement("score-distribution");
-        writer.writeCharacters("\n");
-        
-        int[] scoreRanges = new int[5]; // 1-2, 2-3, 3-4, 4-5, 5
-        for (Method method : methods) {
-            if (method.getMetricsResult() != null) {
-                double score = method.getMetricsResult().getOverallScore();
-                if (score >= 1.0 && score < 2.0) scoreRanges[0]++;
-                else if (score >= 2.0 && score < 3.0) scoreRanges[1]++;
-                else if (score >= 3.0 && score < 4.0) scoreRanges[2]++;
-                else if (score >= 4.0 && score < 5.0) scoreRanges[3]++;
-                else if (score >= 5.0) scoreRanges[4]++;
-            }
-        }
-        
-        writeSimpleElement(writer, "score-1-2", String.valueOf(scoreRanges[0]), 6);
-        writeSimpleElement(writer, "score-2-3", String.valueOf(scoreRanges[1]), 6);
-        writeSimpleElement(writer, "score-3-4", String.valueOf(scoreRanges[2]), 6);
-        writeSimpleElement(writer, "score-4-5", String.valueOf(scoreRanges[3]), 6);
-        writeSimpleElement(writer, "score-5", String.valueOf(scoreRanges[4]), 6);
-        
-        writer.writeCharacters("    ");
-        writer.writeEndElement(); // score-distribution
-        writer.writeCharacters("\n");
-        
+
         writer.writeCharacters("  ");
         writer.writeEndElement(); // summary
         writer.writeCharacters("\n");
@@ -354,10 +327,7 @@ public class XMLReportGenerator {
                 writer.writeAttribute("name", metricResult.getName());
                 writer.writeAttribute("score", String.valueOf(metricResult.getScore()));
                 writer.writeCharacters("\n");
-                
-                if (metricResult.getGuideline() != null && !metricResult.getGuideline().trim().isEmpty()) {
-                    writeSimpleElement(writer, "guideline", metricResult.getGuideline(), 12);
-                }
+
                 
                 if (metricResult.getFeedback() != null && !metricResult.getFeedback().trim().isEmpty()) {
                     writeSimpleElement(writer, "feedback", metricResult.getFeedback(), 12);

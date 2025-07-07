@@ -11,16 +11,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Parses responses from the Anthropic API.
+ * Parses responses from the Anthropic API.k
  */
 @Slf4j
 public class ResponseParser {
     
     // Patterns for extracting information from the API response
     private static final Pattern METHOD_PATTERN = Pattern.compile("METHOD (\\d+) EVALUATION:", Pattern.CASE_INSENSITIVE);
-    private static final Pattern METRIC_PATTERN = Pattern.compile("([\\w\\s]+):\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern METRIC_PATTERN = Pattern.compile("(?:^|\\n)\\s*([A-Za-z][A-Za-z ]+?):\\s*(\\d+)(?:\\s|$)", Pattern.MULTILINE);
     private static final Pattern JUSTIFICATION_PATTERN = Pattern.compile("Justification:\\s*(.+?)(?=\\n\\n|\\n[A-Z]|$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-    private static final Pattern GUIDELINE_PATTERN = Pattern.compile("Guideline:\\s*(.+?)(?=\\n\\n|\\n[A-Z]|$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern RECOMMENDATIONS_PATTERN = Pattern.compile("Recommendations:\\s*(.+?)(?=\\n\\n|\\n[A-Z]|$|---)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern RECOMMENDATION_ITEM_PATTERN = Pattern.compile("\\d+\\.\\s*(.+?)(?=\\n\\d+\\.|$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     
@@ -85,11 +84,17 @@ public class ResponseParser {
         MetricsResult result = new MetricsResult();
         
         try {
+            log.debug("Parsing method evaluation: {}", methodEvaluation);
+            
             // Extract metrics
             Matcher metricMatcher = METRIC_PATTERN.matcher(methodEvaluation);
+            int metricCount = 0;
             while (metricMatcher.find()) {
                 String metricName = metricMatcher.group(1).trim();
                 int score = Integer.parseInt(metricMatcher.group(2));
+                metricCount++;
+                
+                log.debug("Found metric #{}: '{}' with score {}", metricCount, metricName, score);
                 
                 // Find justification for this metric
                 String justification = "";
@@ -97,17 +102,13 @@ public class ResponseParser {
                 Matcher justificationMatcher = JUSTIFICATION_PATTERN.matcher(metricSection);
                 if (justificationMatcher.find()) {
                     justification = justificationMatcher.group(1).trim();
+                    log.debug("Found justification for '{}': {}", metricName, justification);
                 }
-                
-                // Find guideline for this metric
-                String guideline = "";
-                Matcher guidelineMatcher = GUIDELINE_PATTERN.matcher(metricSection);
-                if (guidelineMatcher.find()) {
-                    guideline = guidelineMatcher.group(1).trim();
-                }
-                
-                result.addMetricResult(metricName, score, guideline, justification);
+
+                result.addMetricResult(metricName, score, justification);
             }
+            
+            log.debug("Total metrics found: {}", metricCount);
             
             // Extract recommendations
             List<String> recommendations = new ArrayList<>();

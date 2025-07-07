@@ -56,12 +56,10 @@ public class PromptGenerator {
             promptBuilder.append("METHOD ").append(i + 1).append(" EVALUATION:\n");
             promptBuilder.append("[Metric 1 Name]: [rating 1-5]\n");
             promptBuilder.append("Justification: [explanation]\n");
-            promptBuilder.append("Guideline: [guideline text for this score]\n\n");
             
             promptBuilder.append("[Metric 2 Name]: [rating 1-5]\n");
             promptBuilder.append("Justification: [explanation]\n");
-            promptBuilder.append("Guideline: [guideline text for this score]\n\n");
-            
+
             promptBuilder.append("... (for all metrics)\n\n");
             
             promptBuilder.append("Overall Assessment: [brief summary]\n\n");
@@ -69,7 +67,7 @@ public class PromptGenerator {
             promptBuilder.append("1. [recommendation 1]\n");
             promptBuilder.append("2. [recommendation 2]\n");
             promptBuilder.append("... (if any)\n\n");
-            
+
             if (i < methods.size() - 1) {
                 promptBuilder.append("---\n\n");
             }

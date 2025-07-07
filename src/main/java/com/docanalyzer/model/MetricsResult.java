@@ -70,14 +70,12 @@ public class MetricsResult {
      * 
      * @param name The name of the metric
      * @param score The score (1-5)
-     * @param guideline The guideline text for this score
      * @param feedback The feedback explaining the score
      */
-    public void addMetricResult(String name, int score, String guideline, String feedback) {
+    public void addMetricResult(String name, int score, String feedback) {
         MetricResult result = MetricResult.builder()
                 .name(name)
                 .score(score)
-                .guideline(guideline)
                 .feedback(feedback)
                 .build();
         

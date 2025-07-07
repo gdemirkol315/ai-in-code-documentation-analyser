@@ -87,6 +87,9 @@ public class AnthropicClient {
                     throw new IOException("API request failed with status code " + statusCode);
                 }
                 
+                // Log raw response for debugging
+                log.debug("Raw API response: {}", responseBody);
+                
                 // Parse response
                 JsonNode responseJson = objectMapper.readTree(responseBody);
                 JsonNode contentNode = responseJson.path("content");
@@ -98,7 +101,9 @@ public class AnthropicClient {
                             result.append(content.get("text").asText());
                         }
                     }
-                    return result.toString();
+                    String extractedText = result.toString();
+                    log.info("Extracted API response text: {}", extractedText);
+                    return extractedText;
                 }
                 
                 log.error("Unexpected API response format: {}", responseBody);

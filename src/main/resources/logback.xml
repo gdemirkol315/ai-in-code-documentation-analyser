@@ -27,6 +27,7 @@
     
     <!-- Set specific logging levels for packages -->
     <logger name="com.docanalyzer" level="INFO" />
+    <logger name="com.docanalyzer.ai" level="DEBUG" />
     
     <!-- Set third-party library logging levels -->
     <logger name="org.apache.http" level="WARN" />
