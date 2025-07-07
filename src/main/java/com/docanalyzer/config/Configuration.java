@@ -96,7 +96,7 @@ public class Configuration {
      */
     public static Configuration getDefaultConfiguration() {
         return Configuration.builder()
-                .anthropicApiKey(System.getenv("ANTHROPIC_API_KEY"))
+                .anthropicApiKey(System.getenv("API_KEY"))
                 .modelName("claude-3-opus-20240229")
                 .maxTokens(4096)
                 .maxTokensPerRequest(100000)

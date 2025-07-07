@@ -15,7 +15,7 @@ if not exist "%JAR_FILE%" (
 )
 
 REM Check if ANTHROPIC_API_KEY is set
-if "%ANTHROPIC_API_KEY%"=="" (
+if "%API_KEY%"=="" (
     echo Warning: ANTHROPIC_API_KEY environment variable is not set.
     echo You can set it with: set ANTHROPIC_API_KEY=your_api_key_here
     echo Alternatively, you can add it to src\main\resources\config.properties
