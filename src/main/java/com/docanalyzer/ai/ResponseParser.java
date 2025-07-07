@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 public class ResponseParser {
     
     // Patterns for extracting information from the API response
-    private static final Pattern METHOD_PATTERN = Pattern.compile("METHOD (\\d+) EVALUATION:", Pattern.CASE_INSENSITIVE);
+    private static final Pattern METHOD_PATTERN = Pattern.compile("METHOD (\\d+) [^\\n]+ EVALUATION:", Pattern.CASE_INSENSITIVE);
     private static final Pattern METRIC_PATTERN = Pattern.compile("(?:^|\\n)\\s*([A-Za-z][A-Za-z ]+?):\\s*(\\d+)(?:\\s|$)", Pattern.MULTILINE);
     private static final Pattern JUSTIFICATION_PATTERN = Pattern.compile("Justification:\\s*(.+?)(?=\\n\\n|\\n[A-Z]|$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern RECOMMENDATIONS_PATTERN = Pattern.compile("Recommendations:\\s*(.+?)(?=\\n\\n|\\n[A-Z]|$|---)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
@@ -34,31 +34,36 @@ public class ResponseParser {
         Map<Integer, MetricsResult> results = new HashMap<>();
         
         try {
-            // Split the response by method
+            // Find all method headers first
             Matcher methodMatcher = METHOD_PATTERN.matcher(response);
-            int lastEnd = 0;
+            List<Integer> methodIndices = new ArrayList<>();
+            List<Integer> methodStarts = new ArrayList<>();
             
             while (methodMatcher.find()) {
                 int methodIndex = Integer.parseInt(methodMatcher.group(1));
-                int start = methodMatcher.start();
-                
-                // If this is not the first method, process the previous method
-                if (lastEnd > 0) {
-                    String methodEvaluation = response.substring(lastEnd, start).trim();
-                    results.put(methodIndex - 1, parseMethodEvaluation(methodEvaluation));
-                }
-                
-                lastEnd = start;
+                methodIndices.add(methodIndex);
+                methodStarts.add(methodMatcher.end()); // Start after the header
             }
             
-            // Process the last method
-            if (lastEnd > 0) {
-                String methodEvaluation = response.substring(lastEnd).trim();
-                Matcher lastMethodMatcher = METHOD_PATTERN.matcher(methodEvaluation);
-                if (lastMethodMatcher.find()) {
-                    int methodIndex = Integer.parseInt(lastMethodMatcher.group(1));
-                    results.put(methodIndex, parseMethodEvaluation(methodEvaluation.substring(lastMethodMatcher.end()).trim()));
+            // Process each method
+            for (int i = 0; i < methodIndices.size(); i++) {
+                int methodIndex = methodIndices.get(i);
+                int start = methodStarts.get(i);
+                int end = (i + 1 < methodStarts.size()) ? 
+                    response.lastIndexOf("---", methodStarts.get(i + 1)) : response.length();
+                
+                // If we couldn't find the separator, use the start of next method
+                if (end == -1 || end <= start) {
+                    end = (i + 1 < methodStarts.size()) ? methodStarts.get(i + 1) : response.length();
                 }
+                
+                String methodEvaluation = response.substring(start, end).trim();
+                // Remove the trailing separator if present
+                if (methodEvaluation.endsWith("---")) {
+                    methodEvaluation = methodEvaluation.substring(0, methodEvaluation.length() - 3).trim();
+                }
+                
+                results.put(methodIndex, parseMethodEvaluation(methodEvaluation));
             }
             
             // Check if we got results for all expected methods

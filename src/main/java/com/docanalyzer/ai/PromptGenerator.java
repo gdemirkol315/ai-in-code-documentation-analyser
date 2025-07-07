@@ -53,7 +53,7 @@ public class PromptGenerator {
         promptBuilder.append("FORMAT YOUR RESPONSE AS:\n\n");
         
         for (int i = 0; i < methods.size(); i++) {
-            promptBuilder.append("METHOD ").append(i + 1).append(" EVALUATION:\n");
+            promptBuilder.append("METHOD ").append(i + 1).append(" [method name] EVALUATION:\n");
             promptBuilder.append("[Metric 1 Name]: [rating 1-5]\n");
             promptBuilder.append("Justification: [explanation]\n");
             
