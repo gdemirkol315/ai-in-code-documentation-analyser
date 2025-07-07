@@ -41,7 +41,7 @@ public class MethodExtractorTest {
         List<Method> methods = methodExtractor.extractMethods(parsedFile);
         
         // Then
-        assertEquals(9, methods.size());
+        assertEquals(11, methods.size());
         
         // Verify ceil method (first method in Assess.java)
         Method ceilMethod = methods.stream()
@@ -65,6 +65,20 @@ public class MethodExtractorTest {
         assertEquals("evt", commitMethod.getParameterNames().get(0));
         assertNotNull(commitMethod.getJavadoc());
         assertTrue(commitMethod.getJavadoc().getDescription().contains("change in name"));
+        
+        // Verify generic interface method (the one from your example)
+        Method genericInterfaceMethod = methods.stream()
+                .filter(m -> m.getName().equals("get") && m.getReturnType().equals("T"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals("T", genericInterfaceMethod.getReturnType());
+        assertEquals(1, genericInterfaceMethod.getParameterNames().size());
+        assertEquals("type", genericInterfaceMethod.getParameterNames().get(0));
+        assertEquals("Class<T>", genericInterfaceMethod.getParameterTypes().get(0));
+        assertEquals("", genericInterfaceMethod.getBody()); // Interface methods have no body
+        assertTrue(genericInterfaceMethod.getFullCode().endsWith(";")); // Should end with semicolon
+        assertNotNull(genericInterfaceMethod.getJavadoc());
+        assertTrue(genericInterfaceMethod.getJavadoc().getDescription().contains("Return an instance from the context"));
     }
     
     @Test
@@ -261,6 +275,103 @@ public class MethodExtractorTest {
                     "    public List<String> processData(Object data) {\n" +
                     "        return Arrays.asList(data.toString());\n" +
                     "    }\n" +
+                    "}\n");
+        }
+        return file;
+    }
+    
+    @Test
+    public void testExtractMethods_InterfaceMethods(@TempDir Path tempDir) throws IOException {
+        // Given
+        File javaFile = createInterfaceJavaFile(tempDir);
+        Optional<JavaParser.JavaFile> parsedFileOpt = javaParser.parseFile(javaFile.getAbsolutePath());
+        assertTrue(parsedFileOpt.isPresent());
+        JavaParser.JavaFile parsedFile = parsedFileOpt.get();
+        
+        // When
+        List<Method> methods = methodExtractor.extractMethods(parsedFile);
+        
+        // Then
+        assertEquals(3, methods.size());
+        
+        // Verify simple interface method
+        Method simpleMethod = methods.stream()
+                .filter(m -> m.getName().equals("process"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals("void", simpleMethod.getReturnType());
+        assertEquals(1, simpleMethod.getParameterNames().size());
+        assertEquals("data", simpleMethod.getParameterNames().get(0));
+        assertEquals("String", simpleMethod.getParameterTypes().get(0));
+        assertEquals("", simpleMethod.getBody()); // Interface methods have no body
+        assertTrue(simpleMethod.getFullCode().endsWith(";")); // Should end with semicolon
+        assertNotNull(simpleMethod.getJavadoc());
+        assertTrue(simpleMethod.getJavadoc().getDescription().contains("Processes the given data"));
+        
+        // Verify generic interface method
+        Method genericMethod = methods.stream()
+                .filter(m -> m.getName().equals("get"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals("T", genericMethod.getReturnType());
+        assertEquals(1, genericMethod.getParameterNames().size());
+        assertEquals("type", genericMethod.getParameterNames().get(0));
+        assertEquals("Class<T>", genericMethod.getParameterTypes().get(0));
+        assertEquals("", genericMethod.getBody()); // Interface methods have no body
+        assertTrue(genericMethod.getFullCode().endsWith(";")); // Should end with semicolon
+        assertNotNull(genericMethod.getJavadoc());
+        assertTrue(genericMethod.getJavadoc().getDescription().contains("Return an instance from the context"));
+        
+        // Verify method with throws clause
+        Method throwsMethod = methods.stream()
+                .filter(m -> m.getName().equals("validate"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals("boolean", throwsMethod.getReturnType());
+        assertEquals(1, throwsMethod.getParameterNames().size());
+        assertEquals("input", throwsMethod.getParameterNames().get(0));
+        assertEquals("Object", throwsMethod.getParameterTypes().get(0));
+        assertEquals("", throwsMethod.getBody()); // Interface methods have no body
+        assertTrue(throwsMethod.getFullCode().contains("throws"));
+        assertTrue(throwsMethod.getFullCode().endsWith(";")); // Should end with semicolon
+        assertNotNull(throwsMethod.getJavadoc());
+    }
+    
+    private File createInterfaceJavaFile(Path tempDir) throws IOException {
+        File file = tempDir.resolve("TestInterface.java").toFile();
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write("package com.example.interfaces;\n\n" +
+                    "/**\n" +
+                    " * A test interface with various method signatures.\n" +
+                    " */\n" +
+                    "public interface TestInterface<T> {\n" +
+                    "    \n" +
+                    "    /**\n" +
+                    "     * Processes the given data.\n" +
+                    "     * \n" +
+                    "     * @param data the data to process\n" +
+                    "     */\n" +
+                    "    void process(String data);\n" +
+                    "    \n" +
+                    "    /**\n" +
+                    "     * Return an instance from the context if the type has been registered. The instance\n" +
+                    "     * will be created if it hasn't been accessed previously.\n" +
+                    "     *\n" +
+                    "     * @param <T>  the instance type\n" +
+                    "     * @param type the instance type\n" +
+                    "     * @return the instance managed by the context\n" +
+                    "     * @throws IllegalStateException if the type has not been registered\n" +
+                    "     */\n" +
+                    "    <T> T get(Class<T> type) throws IllegalStateException;\n" +
+                    "    \n" +
+                    "    /**\n" +
+                    "     * Validates the given input.\n" +
+                    "     * \n" +
+                    "     * @param input the input to validate\n" +
+                    "     * @return true if valid, false otherwise\n" +
+                    "     * @throws ValidationException if validation fails\n" +
+                    "     */\n" +
+                    "    boolean validate(Object input) throws ValidationException;\n" +
                     "}\n");
         }
         return file;

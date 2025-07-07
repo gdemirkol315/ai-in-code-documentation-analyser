@@ -20,8 +20,9 @@ public class MethodExtractor {
     private final JavadocParser javadocParser;
     
     // Pattern to match method declarations with Javadoc (including annotations) - both implemented and interface methods
+    // Updated to handle complex generic type parameters like <T extends Comparable<T>> before return type
     private static final Pattern METHOD_PATTERN = Pattern.compile(
-            "(?s)(/\\*\\*.*?\\*/)\\s*(?:(?!class|interface|enum)[^\\S\\r\\n]*\\n)*[^\\S\\r\\n]*(?:@\\w+(?:\\([^)]*\\))?\\s*)*\\s*(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*([\\w<>\\[\\].,]+)\\s+(\\w+)\\s*\\(([^)]*)\\)\\s*(throws\\s+[\\w\\s,.]+)?\\s*([{;])"
+            "(?s)(/\\*\\*.*?\\*/)\\s*(?:(?!class|interface|enum)[^\\S\\r\\n]*\\n)*[^\\S\\r\\n]*(?:@\\w+(?:\\([^)]*\\))?\\s*)*\\s*(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*(?:<[^<>]*(?:<[^<>]*>[^<>]*)*>\\s+)?([\\w<>\\[\\].,]+)\\s+(\\w+)\\s*\\(([^)]*)\\)\\s*(throws\\s+[\\w\\s,.]+)?\\s*([{;])"
     );
     
     // Pattern to match parameters
