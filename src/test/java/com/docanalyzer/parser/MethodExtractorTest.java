@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,7 @@ public class MethodExtractorTest {
     @Test
     public void testExtractMethods_SimpleClass(@TempDir Path tempDir) throws IOException {
         // Given
-        File javaFile = createSimpleJavaFile(tempDir);
+        File javaFile = Paths.get("/home/gork/IdeaProjects/ai-in-code-documentation-analyser/src/main/resources/Assess.java").toFile();
         Optional<JavaParser.JavaFile> parsedFileOpt = javaParser.parseFile(javaFile.getAbsolutePath());
         assertTrue(parsedFileOpt.isPresent());
         JavaParser.JavaFile parsedFile = parsedFileOpt.get();
@@ -40,31 +41,30 @@ public class MethodExtractorTest {
         List<Method> methods = methodExtractor.extractMethods(parsedFile);
         
         // Then
-        assertEquals(2, methods.size());
+        assertEquals(9, methods.size());
         
-        // Verify first method
-        Method addMethod = methods.stream()
-                .filter(m -> m.getName().equals("add"))
+        // Verify ceil method (first method in Assess.java)
+        Method ceilMethod = methods.stream()
+                .filter(m -> m.getName().equals("ceil"))
                 .findFirst()
                 .orElseThrow();
-        assertEquals("int", addMethod.getReturnType());
-        assertEquals(2, addMethod.getParameterNames().size());
-        assertEquals("a", addMethod.getParameterNames().get(0));
-        assertEquals("b", addMethod.getParameterNames().get(1));
-        assertEquals("int", addMethod.getParameterTypes().get(0));
-        assertEquals("int", addMethod.getParameterTypes().get(1));
-        assertNotNull(addMethod.getJavadoc());
-        assertEquals("Adds two numbers.", addMethod.getJavadoc().getDescription());
+        assertEquals("double", ceilMethod.getReturnType());
+        assertEquals(1, ceilMethod.getParameterNames().size());
+        assertEquals("number", ceilMethod.getParameterNames().get(0));
+        assertEquals("double", ceilMethod.getParameterTypes().get(0));
+        assertNotNull(ceilMethod.getJavadoc());
+        assertTrue(ceilMethod.getJavadoc().getDescription().contains("smallest"));
         
-        // Verify second method
-        Method subtractMethod = methods.stream()
-                .filter(m -> m.getName().equals("subtract"))
+        // Verify commitNameChange method (has @Override annotation)
+        Method commitMethod = methods.stream()
+                .filter(m -> m.getName().equals("commitNameChange"))
                 .findFirst()
                 .orElseThrow();
-        assertEquals("int", subtractMethod.getReturnType());
-        assertEquals(2, subtractMethod.getParameterNames().size());
-        assertNotNull(subtractMethod.getJavadoc());
-        assertEquals("Subtracts two numbers.", subtractMethod.getJavadoc().getDescription());
+        assertEquals("void", commitMethod.getReturnType());
+        assertEquals(1, commitMethod.getParameterNames().size());
+        assertEquals("evt", commitMethod.getParameterNames().get(0));
+        assertNotNull(commitMethod.getJavadoc());
+        assertTrue(commitMethod.getJavadoc().getDescription().contains("change in name"));
     }
     
     @Test
@@ -101,6 +101,45 @@ public class MethodExtractorTest {
         assertEquals("List<T>", genericMethod.getReturnType());
         assertEquals(1, genericMethod.getParameterNames().size());
         assertNotNull(genericMethod.getJavadoc());
+    }
+    
+    @Test
+    public void testExtractMethods_WithAnnotations(@TempDir Path tempDir) throws IOException {
+        // Given
+        File javaFile = createAnnotatedJavaFile(tempDir);
+        Optional<JavaParser.JavaFile> parsedFileOpt = javaParser.parseFile(javaFile.getAbsolutePath());
+        assertTrue(parsedFileOpt.isPresent());
+        JavaParser.JavaFile parsedFile = parsedFileOpt.get();
+        
+        // When
+        List<Method> methods = methodExtractor.extractMethods(parsedFile);
+        
+        // Then
+        assertEquals(2, methods.size());
+        
+        // Verify method with @Override annotation
+        Method overrideMethod = methods.stream()
+                .filter(m -> m.getName().equals("processValue"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals("String", overrideMethod.getReturnType());
+        assertEquals(1, overrideMethod.getParameterNames().size());
+        assertEquals("value", overrideMethod.getParameterNames().get(0));
+        assertEquals("String", overrideMethod.getParameterTypes().get(0));
+        assertNotNull(overrideMethod.getJavadoc());
+        assertEquals("This method has an annotation.", overrideMethod.getJavadoc().getDescription());
+        
+        // Verify method with multiple annotations
+        Method multiAnnotationMethod = methods.stream()
+                .filter(m -> m.getName().equals("processData"))
+                .findFirst()
+                .orElseThrow();
+        assertEquals("List<String>", multiAnnotationMethod.getReturnType());
+        assertEquals(1, multiAnnotationMethod.getParameterNames().size());
+        assertEquals("data", multiAnnotationMethod.getParameterNames().get(0));
+        assertEquals("Object", multiAnnotationMethod.getParameterTypes().get(0));
+        assertNotNull(multiAnnotationMethod.getJavadoc());
+        assertEquals("This method has multiple annotations.", multiAnnotationMethod.getJavadoc().getDescription());
     }
     
     private File createSimpleJavaFile(Path tempDir) throws IOException {
@@ -185,6 +224,42 @@ public class MethodExtractorTest {
                     "            list.add(item);\n" +
                     "        }\n" +
                     "        return list;\n" +
+                    "    }\n" +
+                    "}\n");
+        }
+        return file;
+    }
+    
+    private File createAnnotatedJavaFile(Path tempDir) throws IOException {
+        File file = tempDir.resolve("AnnotatedClass.java").toFile();
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write("package com.example.annotated;\n\n" +
+                    "import java.util.List;\n" +
+                    "import java.util.Arrays;\n\n" +
+                    "/**\n" +
+                    " * A class with annotated methods.\n" +
+                    " */\n" +
+                    "public class AnnotatedClass {\n" +
+                    "    \n" +
+                    "    /**\n" +
+                    "     * This method has an annotation.\n" +
+                    "     * @param value the input value\n" +
+                    "     * @return processed value\n" +
+                    "     */\n" +
+                    "    @Override\n" +
+                    "    public String processValue(String value) {\n" +
+                    "        return value.toUpperCase();\n" +
+                    "    }\n" +
+                    "    \n" +
+                    "    /**\n" +
+                    "     * This method has multiple annotations.\n" +
+                    "     * @param data the data to process\n" +
+                    "     * @return result\n" +
+                    "     */\n" +
+                    "    @SuppressWarnings(\"unchecked\")\n" +
+                    "    @NotNull\n" +
+                    "    public List<String> processData(Object data) {\n" +
+                    "        return Arrays.asList(data.toString());\n" +
                     "    }\n" +
                     "}\n");
         }

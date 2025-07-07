@@ -19,9 +19,9 @@ public class MethodExtractor {
     
     private final JavadocParser javadocParser;
     
-    // Pattern to match method declarations with Javadoc
+    // Pattern to match method declarations with Javadoc (including annotations) - both implemented and interface methods
     private static final Pattern METHOD_PATTERN = Pattern.compile(
-            "(?s)(/\\*\\*.*?\\*/)\\s*(?:(?!class|interface|enum)[^\\S\\r\\n]*\\n)*[^\\S\\r\\n]*(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*([\\w<>\\[\\].,]+)\\s+(\\w+)\\s*\\(([^)]*)\\)\\s*(throws\\s+[\\w\\s,.]+)?\\s*\\{([^{}]*(?:\\{[^{}]*\\}[^{}]*)*)\\}"
+            "(?s)(/\\*\\*.*?\\*/)\\s*(?:(?!class|interface|enum)[^\\S\\r\\n]*\\n)*[^\\S\\r\\n]*(?:@\\w+(?:\\([^)]*\\))?\\s*)*\\s*(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*(public|private|protected|static|final|native|synchronized|abstract|transient)?\\s*([\\w<>\\[\\].,]+)\\s+(\\w+)\\s*\\(([^)]*)\\)\\s*(throws\\s+[\\w\\s,.]+)?\\s*([{;])"
     );
     
     // Pattern to match parameters
@@ -58,7 +58,20 @@ public class MethodExtractor {
                 String returnType = methodMatcher.group(4);
                 String methodName = methodMatcher.group(5);
                 String parameters = methodMatcher.group(6);
-                String body = methodMatcher.group(8);
+                
+                // Extract method body using bracket counting or handle interface methods
+                String methodTerminator = methodMatcher.group(8); // Either '{' or ';'
+                String body;
+                
+                if ("{".equals(methodTerminator)) {
+                    // Implemented method - extract body using bracket counting
+                    int openBracePos = methodMatcher.end() - 1; // Position of the opening brace
+                    MethodBodyResult bodyResult = extractMethodBody(content, openBracePos);
+                    body = bodyResult.getBody();
+                } else {
+                    // Interface/abstract method - no body
+                    body = "";
+                }
                 
                 // Extract parameter information
                 List<String> parameterNames = new ArrayList<>();
@@ -97,7 +110,17 @@ public class MethodExtractor {
                 }
                 
                 String signature = signatureBuilder.toString();
-                String fullCode = signature + " {" + body + "}";
+                
+                // Build full code based on method type
+                String fullCode;
+                String methodBody;
+                if ("{".equals(methodTerminator)) {
+                    methodBody = "{" + body + "}";
+                    fullCode = signature + " " + methodBody;
+                } else {
+                    methodBody = "";
+                    fullCode = signature + ";";
+                }
                 
                 // Parse Javadoc
                 Javadoc javadoc = null;
@@ -109,7 +132,7 @@ public class MethodExtractor {
                 Method method = Method.builder()
                         .name(methodName)
                         .signature(signature)
-                        .body("{" + body + "}")
+                        .body(methodBody)
                         .fullCode(fullCode)
                         .javadoc(javadoc)
                         .className(className)
@@ -129,6 +152,119 @@ public class MethodExtractor {
         }
         
         return methods;
+    }
+
+    /**
+     * Extracts method body using bracket counting to handle nested braces properly.
+     * 
+     * @param content the full content string
+     * @param startPos the position of the opening brace
+     * @return MethodBodyResult containing the body content and end position
+     */
+    private MethodBodyResult extractMethodBody(String content, int startPos) {
+        if (startPos >= content.length() || content.charAt(startPos) != '{') {
+            return new MethodBodyResult("", startPos);
+        }
+        
+        int braceCount = 0;
+        int pos = startPos;
+        boolean inString = false;
+        boolean inChar = false;
+        boolean inLineComment = false;
+        boolean inBlockComment = false;
+        char prevChar = '\0';
+        
+        while (pos < content.length()) {
+            char currentChar = content.charAt(pos);
+            
+            // Handle line comments
+            if (!inString && !inChar && !inBlockComment && prevChar == '/' && currentChar == '/') {
+                inLineComment = true;
+                pos++;
+                prevChar = currentChar;
+                continue;
+            }
+            
+            // Handle block comments
+            if (!inString && !inChar && !inLineComment && prevChar == '/' && currentChar == '*') {
+                inBlockComment = true;
+                pos++;
+                prevChar = currentChar;
+                continue;
+            }
+            
+            // End block comment
+            if (inBlockComment && prevChar == '*' && currentChar == '/') {
+                inBlockComment = false;
+                pos++;
+                prevChar = currentChar;
+                continue;
+            }
+            
+            // End line comment
+            if (inLineComment && (currentChar == '\n' || currentChar == '\r')) {
+                inLineComment = false;
+            }
+            
+            // Skip if in comments
+            if (inLineComment || inBlockComment) {
+                pos++;
+                prevChar = currentChar;
+                continue;
+            }
+            
+            // Handle string literals
+            if (!inChar && currentChar == '"' && prevChar != '\\') {
+                inString = !inString;
+            }
+            
+            // Handle character literals
+            if (!inString && currentChar == '\'' && prevChar != '\\') {
+                inChar = !inChar;
+            }
+            
+            // Count braces only if not in string or char literal
+            if (!inString && !inChar) {
+                if (currentChar == '{') {
+                    braceCount++;
+                } else if (currentChar == '}') {
+                    braceCount--;
+                    if (braceCount == 0) {
+                        // Found the closing brace for the method
+                        String methodBody = content.substring(startPos + 1, pos);
+                        return new MethodBodyResult(methodBody, pos + 1);
+                    }
+                }
+            }
+            
+            pos++;
+            prevChar = currentChar;
+        }
+        
+        // If we reach here, braces weren't properly closed
+        String methodBody = content.substring(startPos + 1);
+        return new MethodBodyResult(methodBody, content.length());
+    }
+    
+    /**
+     * Helper class to hold method body extraction results.
+     */
+    private static class MethodBodyResult {
+        private final String body;
+        private final int endPosition;
+        
+        public MethodBodyResult(String body, int endPosition) {
+            this.body = body;
+            this.endPosition = endPosition;
+        }
+        
+        public String getBody() {
+            return body;
+        }
+        
+        public int getEndPosition() {
+            return endPosition;
+        }
     }
 
     /**
