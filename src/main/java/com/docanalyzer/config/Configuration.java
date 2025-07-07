@@ -125,6 +125,7 @@ public class Configuration {
     
     /**
      * Gets a property from the properties object with a default value.
+     * Supports environment variable substitution using ${VAR_NAME} syntax.
      * 
      * @param properties The properties object
      * @param key The property key
@@ -132,7 +133,41 @@ public class Configuration {
      * @return The property value or default value
      */
     private static String getProperty(Properties properties, String key, String defaultValue) {
-        return properties.getProperty(key, defaultValue);
+        String value = properties.getProperty(key, defaultValue);
+        return substituteEnvironmentVariables(value);
+    }
+    
+    /**
+     * Substitutes environment variables in the format ${VAR_NAME} with their actual values.
+     * 
+     * @param value The string that may contain environment variable references
+     * @return The string with environment variables substituted
+     */
+    private static String substituteEnvironmentVariables(String value) {
+        if (value == null) {
+            return null;
+        }
+        
+        // Pattern to match ${VAR_NAME}
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\$\\{([^}]+)\\}");
+        java.util.regex.Matcher matcher = pattern.matcher(value);
+        
+        StringBuffer result = new StringBuffer();
+        while (matcher.find()) {
+            String envVarName = matcher.group(1);
+            String envVarValue = System.getenv(envVarName);
+            
+            if (envVarValue != null) {
+                matcher.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(envVarValue));
+                log.debug("Substituted environment variable {} in configuration", envVarName);
+            } else {
+                log.warn("Environment variable {} not found, keeping original value", envVarName);
+                matcher.appendReplacement(result, java.util.regex.Matcher.quoteReplacement(matcher.group(0)));
+            }
+        }
+        matcher.appendTail(result);
+        
+        return result.toString();
     }
     
     /**
