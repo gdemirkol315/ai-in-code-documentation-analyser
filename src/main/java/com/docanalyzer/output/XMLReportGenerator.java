@@ -232,11 +232,11 @@ public class XMLReportGenerator {
         writer.writeCharacters("\n");
         
         if (javadoc.getDescription() != null && !javadoc.getDescription().trim().isEmpty()) {
-            writeCDataElement(writer, "description", javadoc.getDescription(), 8);
+            writeSimpleElement(writer, "description", javadoc.getDescription(), 8);
         }
         
         if (javadoc.getReturnTag() != null && !javadoc.getReturnTag().trim().isEmpty()) {
-            writeCDataElement(writer, "return-tag", javadoc.getReturnTag(), 8);
+            writeSimpleElement(writer, "return-tag", javadoc.getReturnTag(), 8);
         }
         
         // Parameter tags
@@ -252,7 +252,7 @@ public class XMLReportGenerator {
                 writer.writeCharacters("\n");
                 
                 if (paramTag.getDescription() != null && !paramTag.getDescription().trim().isEmpty()) {
-                    writeCDataElement(writer, "description", paramTag.getDescription(), 12);
+                    writeSimpleElement(writer, "description", paramTag.getDescription(), 12);
                 }
                 
                 writer.writeCharacters("          ");
@@ -278,7 +278,7 @@ public class XMLReportGenerator {
                 writer.writeCharacters("\n");
                 
                 if (throwsTag.getDescription() != null && !throwsTag.getDescription().trim().isEmpty()) {
-                    writeCDataElement(writer, "description", throwsTag.getDescription(), 12);
+                    writeSimpleElement(writer, "description", throwsTag.getDescription(), 12);
                 }
                 
                 writer.writeCharacters("          ");
@@ -304,7 +304,7 @@ public class XMLReportGenerator {
                 writer.writeCharacters("\n");
                 
                 if (otherTag.getContent() != null && !otherTag.getContent().trim().isEmpty()) {
-                    writeCDataElement(writer, "content", otherTag.getContent(), 12);
+                    writeSimpleElement(writer, "content", otherTag.getContent(), 12);
                 }
                 
                 writer.writeCharacters("          ");
@@ -318,7 +318,7 @@ public class XMLReportGenerator {
         }
         
         if (javadoc.getRawText() != null && !javadoc.getRawText().trim().isEmpty()) {
-            writeCDataElement(writer, "raw-text", javadoc.getRawText(), 8);
+            writeSimpleElement(writer, "raw-text", javadoc.getRawText(), 8);
         }
         
         writer.writeCharacters("      ");
@@ -356,11 +356,11 @@ public class XMLReportGenerator {
                 writer.writeCharacters("\n");
                 
                 if (metricResult.getGuideline() != null && !metricResult.getGuideline().trim().isEmpty()) {
-                    writeCDataElement(writer, "guideline", metricResult.getGuideline(), 12);
+                    writeSimpleElement(writer, "guideline", metricResult.getGuideline(), 12);
                 }
                 
                 if (metricResult.getFeedback() != null && !metricResult.getFeedback().trim().isEmpty()) {
-                    writeCDataElement(writer, "feedback", metricResult.getFeedback(), 12);
+                    writeSimpleElement(writer, "feedback", metricResult.getFeedback(), 12);
                 }
                 
                 writer.writeCharacters("          ");
@@ -380,7 +380,7 @@ public class XMLReportGenerator {
             writer.writeCharacters("\n");
             
             for (String recommendation : metricsResult.getRecommendations()) {
-                writeCDataElement(writer, "recommendation", recommendation, 10);
+                writeSimpleElement(writer, "recommendation", recommendation, 10);
             }
             
             writer.writeCharacters("        ");
