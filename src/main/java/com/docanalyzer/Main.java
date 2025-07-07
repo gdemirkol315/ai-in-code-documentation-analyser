@@ -39,6 +39,9 @@ public class Main {
             
             // Parse command line arguments
             CommandLineArgs cmdArgs = parseCommandLineArgs(args);
+
+            log.info("Parsed arguments - Config path: {}, Input paths: {}", 
+                     cmdArgs.getConfigPath(), cmdArgs.getInputPaths());
             
             if (cmdArgs.isHelp()) {
                 printHelp();
