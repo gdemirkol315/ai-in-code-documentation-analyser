@@ -12,7 +12,7 @@
       }
     },
     {
-      "name": "Clarity",
+      "name": "Comprehensibility",
       "description": "Evaluates how clear and understandable the documentation is",
       "guidelines": {
         "1": "Confusing or misleading documentation",
@@ -23,7 +23,7 @@
       }
     },
     {
-      "name": "Code Alignment",
+      "name": "Alignment",
       "description": "Measures how well the documentation aligns with the actual code",
       "guidelines": {
         "1": "Documentation contradicts or misrepresents the code",
