@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from scipy.stats import spearmanr
+from scipy.stats import spearmanr, ttest_rel
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Tuple, Dict, List
@@ -133,6 +133,119 @@ class StatisticalAnalyzer:
         }
         
         return results
+    
+    def calculate_paired_t_test(self, ai_scores: List[float], human_scores: List[float]) -> Dict:
+        """
+        Calculate paired-sample t-test (H2) for comparing AI-generated documentation 
+        quality scores against human ratings.
+        
+        Args:
+            ai_scores (List[float]): List of AI-generated scores per sample
+            human_scores (List[float]): List of average human scores per sample
+            
+        Returns:
+            Dict: Dictionary containing:
+                - t_statistic: the test statistic value
+                - p_value: the p-value of the test
+                - mean_difference: the average difference between AI and human scores
+                
+        Raises:
+            ValueError: If input validation fails
+        """
+        # Input validation
+        if not isinstance(ai_scores, list) or not isinstance(human_scores, list):
+            raise ValueError("Both ai_scores and human_scores must be lists")
+        
+        if len(ai_scores) != len(human_scores):
+            raise ValueError("ai_scores and human_scores must have the same length")
+        
+        if len(ai_scores) < 2:
+            raise ValueError("Both lists must contain at least 2 values")
+        
+        # Convert to numpy arrays and check for valid numeric values
+        try:
+            ai_array = np.array(ai_scores, dtype=float)
+            human_array = np.array(human_scores, dtype=float)
+        except (ValueError, TypeError):
+            raise ValueError("All values in both lists must be numeric")
+        
+        # Check for NaN or infinite values
+        if np.any(np.isnan(ai_array)) or np.any(np.isnan(human_array)):
+            raise ValueError("Lists cannot contain NaN values")
+        
+        if np.any(np.isinf(ai_array)) or np.any(np.isinf(human_array)):
+            raise ValueError("Lists cannot contain infinite values")
+        
+        # Perform paired t-test
+        t_statistic, p_value = ttest_rel(ai_array, human_array)
+        
+        # Calculate mean difference (AI - Human)
+        differences = ai_array - human_array
+        mean_difference = np.mean(differences)
+        
+        return {
+            't_statistic': float(t_statistic),
+            'p_value': float(p_value),
+            'mean_difference': float(mean_difference)
+        }
+    
+    def perform_paired_t_test_analysis(self) -> Dict:
+        """
+        Perform paired t-test analysis using the loaded data.
+        
+        Returns:
+            Dict: Analysis results including t-statistic, p-value, and mean difference
+        """
+        if self.df is None:
+            raise ValueError("No data loaded.")
+        
+        ai_scores = self.df['AI_Result'].tolist()
+        human_scores = self.df['Average_Developer_Result'].tolist()
+        
+        return self.calculate_paired_t_test(ai_scores, human_scores)
+    
+    def print_paired_t_test_results(self) -> None:
+        """
+        Print formatted paired t-test analysis results.
+        """
+        results = self.perform_paired_t_test_analysis()
+        
+        print("\n" + "="*60)
+        print("PAIRED T-TEST ANALYSIS (H2)")
+        print("="*60)
+        print(f"Number of paired observations: {len(self.df)}")
+        print(f"T-statistic: {results['t_statistic']:.4f}")
+        print(f"P-value: {results['p_value']:.6f}")
+        print(f"Mean difference (AI - Human): {results['mean_difference']:.4f}")
+        
+        # Statistical significance
+        alpha = 0.05
+        if results['p_value'] < alpha:
+            print(f"Result: STATISTICALLY SIGNIFICANT at α = {alpha}")
+            if results['mean_difference'] > 0:
+                print("AI scores are significantly HIGHER than human scores on average.")
+            else:
+                print("AI scores are significantly LOWER than human scores on average.")
+        else:
+            print(f"Result: NOT STATISTICALLY SIGNIFICANT at α = {alpha}")
+            print("No significant difference between AI and human scores.")
+        
+        # Effect size interpretation (Cohen's d)
+        if self.df is not None:
+            differences = self.df['AI_Result'] - self.df['Average_Developer_Result']
+            cohens_d = results['mean_difference'] / differences.std()
+            
+            abs_d = abs(cohens_d)
+            if abs_d < 0.2:
+                effect_size = "negligible"
+            elif abs_d < 0.5:
+                effect_size = "small"
+            elif abs_d < 0.8:
+                effect_size = "medium"
+            else:
+                effect_size = "large"
+            
+            print(f"Cohen's d: {cohens_d:.4f} ({effect_size} effect size)")
     
     def print_correlation_results(self) -> None:
         """
@@ -328,6 +441,9 @@ def main():
         
         # Perform and print correlation analysis
         analyzer.print_correlation_results()
+        
+        # Perform and print paired t-test analysis
+        analyzer.print_paired_t_test_results()
         
         # Create visualizations
         print("\nCreating visualizations...")
