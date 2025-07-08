@@ -49,18 +49,27 @@ public class PromptGenerator {
             promptBuilder.append("\n\n");
         }
         
+        // Add formatting requirements
+        promptBuilder.append("IMPORTANT FORMATTING REQUIREMENTS:\n");
+        promptBuilder.append("- Use PLAIN TEXT only - NO markdown formatting (no **, *, etc.)\n");
+        promptBuilder.append("- Format metrics exactly as: 'MetricName: Score' (e.g., 'Comprehensibility: 3')\n");
+        promptBuilder.append("- Do NOT bold, italicize, or emphasize metric names\n");
+        promptBuilder.append("- Use consistent formatting throughout your response\n");
+        promptBuilder.append("- Each metric should be on its own line followed by justification\n\n");
+        
         // Add response format instructions
         promptBuilder.append("FORMAT YOUR RESPONSE AS:\n\n");
         
         for (int i = 0; i < methods.size(); i++) {
             promptBuilder.append("METHOD ").append(i + 1).append(" [method name] EVALUATION:\n");
-            promptBuilder.append("[Metric 1 Name]: [rating 1-5]\n");
-            promptBuilder.append("Justification: [explanation]\n");
+            promptBuilder.append("Comprehensibility: [rating 1-5]\n");
+            promptBuilder.append("Justification: [explanation]\n\n");
             
-            promptBuilder.append("[Metric 2 Name]: [rating 1-5]\n");
-            promptBuilder.append("Justification: [explanation]\n");
+            promptBuilder.append("Alignment: [rating 1-5]\n");
+            promptBuilder.append("Justification: [explanation]\n\n");
 
-            promptBuilder.append("... (for all metrics)\n\n");
+            promptBuilder.append("Completeness: [rating 1-5]\n");
+            promptBuilder.append("Justification: [explanation]\n\n");
             
             promptBuilder.append("Overall Assessment: [brief summary]\n\n");
             promptBuilder.append("Recommendations:\n");
