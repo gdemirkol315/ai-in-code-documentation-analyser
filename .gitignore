@@ -28,3 +28,5 @@ Thumbs.db
 # Configuration with sensitive information
 # Uncomment if you don't want to commit your API key
 # src/main/resources/config.properties
+
+venv/
