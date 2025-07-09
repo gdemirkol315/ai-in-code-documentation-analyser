@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-in-Code Documentation Analyzer - High-Level Architecture</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .diagram {
+            width: 100%;
+            height: 700px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI-in-Code Documentation Analyzer - High-Level System Architecture</h1>
+        
+        <svg class="diagram" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg">
+            <!-- Background -->
+            <rect width="1000" height="600" fill="#f8f9fa"/>
+            
+            <!-- Layer backgrounds -->
+            <!-- Input Processing Layer -->
+            <rect x="50" y="80" width="880" height="80" rx="10" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" opacity="0.3"/>
+            <text x="70" y="105" font-size="14" font-weight="bold" fill="#1976d2">Input Processing Layer</text>
+            
+            <!-- Configuration Management Layer -->
+            <rect x="50" y="180" width="880" height="80" rx="10" fill="#fce4ec" stroke="#c2185b" stroke-width="2" opacity="0.3"/>
+            <text x="70" y="205" font-size="14" font-weight="bold" fill="#c2185b">Configuration Management</text>
+            
+            <!-- AI Integration Layer -->
+            <rect x="50" y="280" width="880" height="80" rx="10" fill="#e8f5e8" stroke="#388e3c" stroke-width="2" opacity="0.3"/>
+            <text x="70" y="305" font-size="14" font-weight="bold" fill="#388e3c">AI Integration Layer</text>
+            
+            <!-- Batch Processing Engine -->
+            <rect x="50" y="380" width="880" height="80" rx="10" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2" opacity="0.3"/>
+            <text x="70" y="405" font-size="14" font-weight="bold" fill="#7b1fa2">Batch Processing Engine</text>
+            
+            <!-- Output Generation -->
+            <rect x="50" y="480" width="880" height="80" rx="10" fill="#e0f2f1" stroke="#00796b" stroke-width="2" opacity="0.3"/>
+            <text x="70" y="505" font-size="14" font-weight="bold" fill="#00796b">Output Generation</text>
+            
+            <!-- Input Processing Layer Components -->
+            <rect x="150" y="110" width="120" height="40" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+            <text x="210" y="135" text-anchor="middle" font-size="12" font-weight="bold">JavaParser</text>
+            
+            <rect x="300" y="110" width="120" height="40" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+            <text x="360" y="135" text-anchor="middle" font-size="12" font-weight="bold">MethodExtractor</text>
+            
+            <rect x="450" y="110" width="120" height="40" rx="5" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+            <text x="510" y="135" text-anchor="middle" font-size="12" font-weight="bold">JavadocParser</text>
+            
+            <!-- Configuration Management Components -->
+            <rect x="200" y="210" width="120" height="40" rx="5" fill="#fce4ec" stroke="#c2185b" stroke-width="2"/>
+            <text x="260" y="235" text-anchor="middle" font-size="12" font-weight="bold">Configuration</text>
+            
+            <rect x="400" y="210" width="120" height="40" rx="5" fill="#fce4ec" stroke="#c2185b" stroke-width="2"/>
+            <text x="460" y="235" text-anchor="middle" font-size="12" font-weight="bold">MetricsManager</text>
+            
+            <!-- AI Integration Layer Components -->
+            <rect x="150" y="310" width="120" height="40" rx="5" fill="#e8f5e8" stroke="#388e3c" stroke-width="2"/>
+            <text x="210" y="335" text-anchor="middle" font-size="12" font-weight="bold">AnthropicClient</text>
+            
+            <rect x="300" y="310" width="120" height="40" rx="5" fill="#e8f5e8" stroke="#388e3c" stroke-width="2"/>
+            <text x="360" y="335" text-anchor="middle" font-size="12" font-weight="bold">PromptGenerator</text>
+            
+            <rect x="450" y="310" width="120" height="40" rx="5" fill="#e8f5e8" stroke="#388e3c" stroke-width="2"/>
+            <text x="510" y="335" text-anchor="middle" font-size="12" font-weight="bold">ResponseParser</text>
+            
+            <!-- External AI Service -->
+            <rect x="650" y="310" width="120" height="40" rx="5" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
+            <text x="710" y="330" text-anchor="middle" font-size="11" font-weight="bold">Claude AI</text>
+            <text x="710" y="345" text-anchor="middle" font-size="11" font-weight="bold">Service</text>
+            
+            <!-- Batch Processing Engine Components -->
+            <rect x="250" y="410" width="120" height="40" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+            <text x="310" y="435" text-anchor="middle" font-size="12" font-weight="bold">BatchProcessor</text>
+            
+            <rect x="450" y="410" width="120" height="40" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+            <text x="510" y="435" text-anchor="middle" font-size="12" font-weight="bold">TokenCounter</text>
+            
+            <!-- Output Generation Components -->
+            <rect x="350" y="510" width="150" height="40" rx="5" fill="#e0f2f1" stroke="#00796b" stroke-width="2"/>
+            <text x="425" y="535" text-anchor="middle" font-size="12" font-weight="bold">XMLReportGenerator</text>
+            
+            <!-- Data flow arrows -->
+            <defs>
+                <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+                </marker>
+                <marker id="configArrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                    <polygon points="0 0, 10 3.5, 0 7" fill="#666"/>
+                </marker>
+            </defs>
+            
+            <!-- Vertical flow between layers -->
+            <path d="M210 150 L210 180" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M360 150 L360 180" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M510 150 L510 180" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            
+            <path d="M260 250 L260 280" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M460 250 L460 280" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            
+            <path d="M210 350 L210 380" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M360 350 L360 380" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M510 350 L510 380" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            
+            <path d="M310 450 L310 480" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M510 450 L510 480" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            
+            <!-- Horizontal flow within AI Integration Layer -->
+            <path d="M270 330 L300 330" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M420 330 L450 330" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M570 330 L650 330" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            
+            <!-- Return flow from AI service -->
+            <path d="M650 320 L570 320" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            
+            <!-- Horizontal flow within Batch Processing -->
+            <path d="M370 430 L450 430" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            
+            <!-- Configuration connections (dashed lines) -->
+            <path d="M260 210 L210 280" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#configArrow)" stroke-dasharray="5,5"/>
+            <path d="M460 210 L310 380" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#configArrow)" stroke-dasharray="5,5"/>
+            <path d="M460 210 L425 480" stroke="#666" stroke-width="1.5" fill="none" marker-end="url(#configArrow)" stroke-dasharray="5,5"/>
+            
+            <!-- Input data source -->
+            <rect x="80" y="30" width="100" height="40" rx="5" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+            <text x="130" y="50" text-anchor="middle" font-size="11" font-weight="bold">Java Source</text>
+            <text x="130" y="65" text-anchor="middle" font-size="11" font-weight="bold">Files</text>
+            
+            <!-- Arrow from input to processing layer -->
+            <path d="M130 70 L130 110" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            
+            <!-- Output data -->
+            <rect x="600" y="510" width="100" height="40" rx="5" fill="#e0f2f1" stroke="#00796b" stroke-width="2"/>
+            <text x="650" y="530" text-anchor="middle" font-size="11" font-weight="bold">Analysis</text>
+            <text x="650" y="545" text-anchor="middle" font-size="11" font-weight="bold">Reports</text>
+            
+            <!-- Arrow from generator to output -->
+            <path d="M500 530 L600 530" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            
+            <!-- Title -->
+            <text x="500" y="25" text-anchor="middle" font-size="18" font-weight="bold" fill="#333">System Architecture Overview</text>
+        </svg>
+        
+        <div style="margin-top: 20px;">
+            <h3>Architecture Layers:</h3>
+            <ul>
+                <li><strong>Input Processing Layer:</strong> Handles parsing of Java source files, method extraction, and Javadoc analysis</li>
+                <li><strong>Configuration Management:</strong> Manages system configuration and metrics definitions</li>
+                <li><strong>AI Integration Layer:</strong> Interfaces with Claude AI service for documentation quality assessment</li>
+                <li><strong>Batch Processing Engine:</strong> Optimizes API calls through batching and token management</li>
+                <li><strong>Output Generation:</strong> Creates comprehensive XML reports with analysis results</li>
+            </ul>
+            
+            <h3>Data Flow:</h3>
+            <p>Java source files → Input Processing → Configuration-driven Analysis → AI Evaluation → Batch Processing → Report Generation</p>
+            
+            <h3>Key Design Principles:</h3>
+            <ul>
+                <li><strong>Layered Architecture:</strong> Clear separation of concerns across functional layers</li>
+                <li><strong>Configuration-Driven:</strong> Flexible metrics and settings management</li>
+                <li><strong>Batch Processing:</strong> Efficient API usage through intelligent batching</li>
+                <li><strong>Modular Design:</strong> Independent components for easy maintenance and testing</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
