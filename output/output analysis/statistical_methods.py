@@ -6,6 +6,9 @@ import seaborn as sns
 from typing import Tuple, Dict, List
 import warnings
 
+# Bonferroni Correction: α = 0.05 / 3 tests (completeness, clarity, alignment)
+BONFERRONI_ALPHA = 0.05 / 3  # 0.0167
+
 class StatisticalAnalyzer:
     """
     A class for performing statistical analysis on documentation quality metrics.
@@ -259,16 +262,16 @@ class StatisticalAnalyzer:
         print(f"P-value: {results['p_value']:.6f}")
         print(f"Mean difference (AI - Human): {results['mean_difference']:.4f}")
         
-        # Statistical significance
-        alpha = 0.05
+        # Statistical significance with Bonferroni correction
+        alpha = BONFERRONI_ALPHA
         if results['p_value'] < alpha:
-            print(f"Result: STATISTICALLY SIGNIFICANT at α = {alpha}")
+            print(f"Result: STATISTICALLY SIGNIFICANT at α = {alpha:.4f} (Bonferroni corrected)")
             if results['mean_difference'] > 0:
                 print("AI scores are significantly HIGHER than human scores on average.")
             else:
                 print("AI scores are significantly LOWER than human scores on average.")
         else:
-            print(f"Result: NOT STATISTICALLY SIGNIFICANT at α = {alpha}")
+            print(f"Result: NOT STATISTICALLY SIGNIFICANT at α = {alpha:.4f} (Bonferroni corrected)")
             print("No significant difference between AI and human scores.")
         
         # Effect size interpretation (Cohen's d)
