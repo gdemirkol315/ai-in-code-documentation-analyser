@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from scipy.stats import spearmanr, ttest_rel
+from scipy.stats import spearmanr, ttest_rel, shapiro, wilcoxon
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Tuple, Dict, List
@@ -191,10 +191,10 @@ class StatisticalAnalyzer:
     
     def perform_paired_t_test_analysis(self) -> Dict:
         """
-        Perform paired t-test analysis using the loaded data.
+        Perform paired t-test analysis using the loaded data with normality check.
         
         Returns:
-            Dict: Analysis results including t-statistic, p-value, and mean difference
+            Dict: Analysis results including test type, statistic, p-value, and mean difference
         """
         if self.df is None:
             raise ValueError("No data loaded.")
@@ -202,7 +202,38 @@ class StatisticalAnalyzer:
         ai_scores = self.df['AI_Result'].tolist()
         human_scores = self.df['Average_Developer_Result'].tolist()
         
-        return self.calculate_paired_t_test(ai_scores, human_scores)
+        # Convert to numpy arrays
+        ai_array = np.array(ai_scores, dtype=float)
+        human_array = np.array(human_scores, dtype=float)
+        
+        # Calculate differences for normality test
+        differences = ai_array - human_array
+        
+        # Perform Shapiro-Wilk test for normality
+        shapiro_stat, shapiro_p = shapiro(differences)
+        
+        # Choose test based on normality assumption
+        if shapiro_p >= 0.05:
+            # Assume normality - use paired t-test
+            test_stat, p_value = ttest_rel(ai_array, human_array)
+            test_type = 'paired_t_test'
+        else:
+            # Assume non-normality - use Wilcoxon signed-rank test
+            test_stat, p_value = wilcoxon(ai_array, human_array)
+            test_type = 'wilcoxon_signed_rank'
+        
+        # Calculate mean difference
+        mean_difference = np.mean(differences)
+        
+        return {
+            'test_type': test_type,
+            't_statistic': float(test_stat),
+            'p_value': float(p_value),
+            'mean_difference': float(mean_difference),
+            'shapiro_statistic': float(shapiro_stat),
+            'shapiro_p_value': float(shapiro_p),
+            'normality_assumed': shapiro_p >= 0.05
+        }
     
     def print_paired_t_test_results(self) -> None:
         """
@@ -214,7 +245,17 @@ class StatisticalAnalyzer:
         print("PAIRED T-TEST ANALYSIS (H2)")
         print("="*60)
         print(f"Number of paired observations: {len(self.df)}")
-        print(f"T-statistic: {results['t_statistic']:.4f}")
+        
+        # Show normality test results
+        print(f"\nNormality Test (Shapiro-Wilk):")
+        print(f"Shapiro-Wilk statistic: {results['shapiro_statistic']:.4f}")
+        print(f"Shapiro-Wilk p-value: {results['shapiro_p_value']:.6f}")
+        print(f"Normality assumed: {results['normality_assumed']}")
+        
+        # Show which test was used
+        test_name = "Paired t-test" if results['test_type'] == 'paired_t_test' else "Wilcoxon signed-rank test"
+        print(f"\nTest used: {test_name}")
+        print(f"Test statistic: {results['t_statistic']:.4f}")
         print(f"P-value: {results['p_value']:.6f}")
         print(f"Mean difference (AI - Human): {results['mean_difference']:.4f}")
         
