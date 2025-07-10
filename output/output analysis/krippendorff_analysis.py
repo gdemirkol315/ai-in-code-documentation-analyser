@@ -221,7 +221,7 @@ def generate_comprehensive_report(data, headers, output_file='krippendorff_compr
 def main():
     # Load the survey data
     print("Loading survey data...")
-    data, headers = load_survey_data('output analysis/survey-result.txt')
+    data, headers = load_survey_data('survey-result.txt')
     
     print(f"Loaded {len(data)} raters and {len(headers)} items")
     
