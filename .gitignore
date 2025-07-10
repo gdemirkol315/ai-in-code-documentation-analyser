@@ -30,3 +30,5 @@ Thumbs.db
 # src/main/resources/config.properties
 
 venv/
+poetry.lock
+pyproject.toml
