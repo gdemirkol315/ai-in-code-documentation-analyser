@@ -80,20 +80,23 @@
             
             <!-- AI Integration Layer Components -->
             <rect x="100" y="280" width="120" height="40" rx="5" fill="#e8f5e8" stroke="#388e3c" stroke-width="2"/>
-            <text x="160" y="305" text-anchor="middle" font-size="12" font-weight="bold">AnthropicClient</text>
+            <text x="160" y="305" text-anchor="middle" font-size="12" font-weight="bold">PromptGenerator</text>
             
             <rect x="250" y="280" width="120" height="40" rx="5" fill="#e8f5e8" stroke="#388e3c" stroke-width="2"/>
-            <text x="310" y="305" text-anchor="middle" font-size="12" font-weight="bold">PromptGenerator</text>
+            <text x="310" y="305" text-anchor="middle" font-size="12" font-weight="bold">AnthropicClient</text>
             
-            <rect x="400" y="280" width="120" height="40" rx="5" fill="#e8f5e8" stroke="#388e3c" stroke-width="2"/>
-            <text x="460" y="305" text-anchor="middle" font-size="12" font-weight="bold">ResponseParser</text>
+            <!-- Moved ResponseParser to the right -->
+            <rect x="390" y="280" width="120" height="40" rx="5" fill="#e8f5e8" stroke="#388e3c" stroke-width="2"/>
+            <text x="450" y="305" text-anchor="middle" font-size="12" font-weight="bold">ResponseParser</text>
             
             <!-- Batch Processing Engine Components -->
-            <rect x="250" y="340" width="120" height="40" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
-            <text x="310" y="365" text-anchor="middle" font-size="12" font-weight="bold">BatchProcessor</text>
             
-            <rect x="450" y="340" width="120" height="40" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
-            <text x="510" y="365" text-anchor="middle" font-size="12" font-weight="bold">TokenCounter</text>
+            <rect x="390" y="340" width="120" height="40" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+            <text x="450" y="365" text-anchor="middle" font-size="12" font-weight="bold">BatchProcessor</text>
+            
+            <!-- TokenCounter moved to the right -->
+            <rect x="540" y="340" width="120" height="40" rx="5" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+            <text x="600" y="365" text-anchor="middle" font-size="12" font-weight="bold">TokenCounter</text>
             
             <!-- External AI Service (outside all system boxes) -->
             <rect x="820" y="280" width="120" height="40" rx="5" fill="#ffebee" stroke="#d32f2f" stroke-width="2"/>
@@ -124,25 +127,24 @@
             <path d="M780 150 L780 200" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
             <path d="M610 150 L510 450" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
 
-            <path d="M310 380 L310 420" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M445 380 L445 420" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
             
             <!-- Horizontal flow within AI Integration Layer -->
             <path d="M220 300 L250 300" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-            <path d="M370 300 L400 300" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
             
             <!-- Arrow from AnthropicClient to Claude AI Service -->
-            <path d="M200 280 Q150 250 820 300" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M300 280 Q300 250 820 300" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
             
             <!-- Return flow from Claude AI Service to ResponseParser -->
-            <path d="M820 310 Q650 350 520 300" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M820 310 Q750 350 500 300" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
             
-            <!-- Bidirectional arrows between BatchProcessor and AI Integration Layer -->
-            <path d="M310 340 L310 320" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-            <path d="M320 320 L320 340" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <!-- Bidirectional arrows between BatchProcessor and ResponseParser -->
+            <path d="M440 340 L440 320" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M450 320 L450 340" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
             
             <!-- Horizontal flow within Batch Processing (bidirectional) -->
-            <path d="M370 360 L450 360" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
-            <path d="M450 350 L370 350" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M510 360 L540 360" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <path d="M540 350 L510 350" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
 
             
             <!-- Arrow from Configuration to MetricsManager -->
