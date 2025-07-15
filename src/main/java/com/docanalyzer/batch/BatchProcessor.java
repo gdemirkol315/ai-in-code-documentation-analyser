@@ -4,6 +4,7 @@ import com.docanalyzer.ai.AnthropicClient;
 import com.docanalyzer.ai.PromptGenerator;
 import com.docanalyzer.ai.ResponseParser;
 import com.docanalyzer.config.Configuration;
+import com.docanalyzer.metrics.MetricsValidator;
 import com.docanalyzer.model.Method;
 import com.docanalyzer.model.MetricsResult;
 import com.docanalyzer.util.TokenCounter;
@@ -25,7 +26,7 @@ public class BatchProcessor {
     private final TokenCounter tokenCounter;
     private final AnthropicClient anthropicClient;
     private final PromptGenerator promptGenerator;
-    private final ResponseParser responseParser;
+    private ResponseParser responseParser;
     
     /**
      * Creates a new BatchProcessor with the specified configuration.
@@ -38,7 +39,16 @@ public class BatchProcessor {
         this.tokenCounter = new TokenCounter();
         this.anthropicClient = new AnthropicClient(config);
         this.promptGenerator = new PromptGenerator();
-        this.responseParser = new ResponseParser();
+        
+        // Create MetricsValidator and pass it to ResponseParser
+        try {
+            MetricsValidator metricsValidator = MetricsValidator.fromConfiguration(config);
+            this.responseParser = new ResponseParser(metricsValidator);
+            log.info("BatchProcessor initialized with metrics validation enabled");
+        } catch (Exception e) {
+            log.warn("Failed to initialize metrics validator: {}. Proceeding without validation.", e.getMessage());
+            this.responseParser = new ResponseParser();
+        }
     }
     
     /**
@@ -73,7 +83,7 @@ public class BatchProcessor {
                 }
                 
                 int processed = processedCount.addAndGet(batch.size());
-                log.info("Processed {}/{} methods ({:.1f}%)", processed, totalMethods, 
+                log.info("Processed {}/{} methods", processed, totalMethods,
                         (double) processed / totalMethods * 100);
                 
             } catch (Exception e) {
