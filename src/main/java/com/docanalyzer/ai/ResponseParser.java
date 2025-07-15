@@ -108,7 +108,7 @@ public class ResponseParser {
         MetricsResult result = new MetricsResult();
         
         try {
-            log.debug("Parsing method evaluation: {}", methodEvaluation);
+            //log.debug("Parsing method evaluation: {}", methodEvaluation);
             
             // Extract metrics
             Matcher metricMatcher = METRIC_PATTERN.matcher(methodEvaluation);
