@@ -1,5 +1,6 @@
 package com.docanalyzer.output;
 
+import com.docanalyzer.config.Configuration;
 import com.docanalyzer.model.Javadoc;
 import com.docanalyzer.model.Method;
 import com.docanalyzer.model.MetricsResult;
@@ -24,7 +25,12 @@ import java.util.Map;
 public class XMLReportGenerator {
     
     private static final Logger log = LoggerFactory.getLogger(XMLReportGenerator.class);
-    
+    private Configuration config;
+
+    public XMLReportGenerator(Configuration config) {
+        this.config = config;
+    }
+
     /**
      * Generates an XML report for the analyzed methods.
      * 
@@ -53,6 +59,9 @@ public class XMLReportGenerator {
             writer.writeStartElement("javadoc-analysis-report");
             writer.writeAttribute("generated-at", LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
             writer.writeAttribute("total-methods", String.valueOf(methods.size()));
+            writer.writeAttribute("model", config.getModelName());
+            writer.writeAttribute("temperature", config.getTemperature() + "");
+            writer.writeAttribute("max_tokens", config.getMaxTokens() + "");
             writer.writeCharacters("\n");
             
             // Summary section

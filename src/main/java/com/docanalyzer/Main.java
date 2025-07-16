@@ -138,7 +138,7 @@ public class Main {
             batchProcessor.processBatches(methodsWithJavadoc, guidelines);
             
             // Generate report
-            XMLReportGenerator reportGenerator = new XMLReportGenerator();
+            XMLReportGenerator reportGenerator = new XMLReportGenerator(config);
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String reportName = "javadoc_analysis_" + timestamp + ".xml";
             String reportPath = reportGenerator.generateReport(methodsWithJavadoc, config.getOutputPath(), reportName);
