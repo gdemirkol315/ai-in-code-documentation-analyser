@@ -25,7 +25,7 @@ import java.util.Map;
 public class XMLReportGenerator {
     
     private static final Logger log = LoggerFactory.getLogger(XMLReportGenerator.class);
-    private Configuration config;
+    private final Configuration config;
 
     public XMLReportGenerator(Configuration config) {
         this.config = config;
@@ -389,27 +389,6 @@ public class XMLReportGenerator {
         writer.writeCharacters(" ".repeat(indentLevel));
         writer.writeStartElement(elementName);
         writer.writeCharacters(escapeXmlContent(content));
-        writer.writeEndElement();
-        writer.writeCharacters("\n");
-    }
-    
-    /**
-     * Writes an XML element with CDATA content.
-     * 
-     * @param writer XML stream writer
-     * @param elementName Name of the element
-     * @param content Text content (will be wrapped in CDATA)
-     * @param indentLevel Indentation level (number of spaces)
-     * @throws XMLStreamException if XML writing fails
-     */
-    private void writeCDataElement(XMLStreamWriter writer, String elementName, String content, int indentLevel) throws XMLStreamException {
-        if (content == null || content.trim().isEmpty()) {
-            return;
-        }
-        
-        writer.writeCharacters(" ".repeat(indentLevel));
-        writer.writeStartElement(elementName);
-        writer.writeCData(content);
         writer.writeEndElement();
         writer.writeCharacters("\n");
     }

@@ -11,16 +11,7 @@ import java.util.List;
  */
 @Slf4j
 public class PromptGenerator {
-    
-    private final TokenCounter tokenCounter;
-    
-    /**
-     * Creates a new PromptGenerator.
-     */
-    public PromptGenerator() {
-        this.tokenCounter = new TokenCounter();
-    }
-    
+
     /**
      * Generates a prompt for a batch of methods.
      * 

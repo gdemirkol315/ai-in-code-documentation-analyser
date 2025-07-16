@@ -27,9 +27,8 @@ public class TokenCounter {
         // This is a very rough estimate based on the average number of characters per token
         // For more accurate token counting, you would need to use a tokenizer like tiktoken
         int charCount = text.length();
-        int estimatedTokens = (int) Math.ceil(charCount / CHARS_PER_TOKEN);
         
-        return estimatedTokens;
+        return (int) Math.ceil(charCount / CHARS_PER_TOKEN);
     }
     
     /**

@@ -82,15 +82,7 @@ public class MetricsManager {
     public List<Metric> getAllMetrics() {
         return new ArrayList<>(metrics.values());
     }
-    
-    /**
-     * Gets the number of metrics.
-     * 
-     * @return The number of metrics
-     */
-    public int getMetricCount() {
-        return metrics.size();
-    }
+
     
     /**
      * Adds a metric.
@@ -100,17 +92,7 @@ public class MetricsManager {
     public void addMetric(Metric metric) {
         metrics.put(metric.getName(), metric);
     }
-    
-    /**
-     * Removes a metric.
-     * 
-     * @param name The name of the metric to remove
-     * @return True if the metric was removed
-     */
-    public boolean removeMetric(String name) {
-        return metrics.remove(name) != null;
-    }
-    
+
     /**
      * Saves metrics definitions to a JSON file.
      * 
