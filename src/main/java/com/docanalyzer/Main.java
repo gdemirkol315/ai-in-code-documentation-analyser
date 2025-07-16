@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -138,7 +137,7 @@ public class Main {
             batchProcessor.processBatches(methodsWithJavadoc, guidelines);
             
             // Generate report
-            XMLReportGenerator reportGenerator = new XMLReportGenerator();
+            XMLReportGenerator reportGenerator = new XMLReportGenerator(config);
             String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
             String reportName = "javadoc_analysis_" + timestamp + ".xml";
             String reportPath = reportGenerator.generateReport(methodsWithJavadoc, config.getOutputPath(), reportName);

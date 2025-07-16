@@ -1,5 +1,6 @@
 package com.docanalyzer.model;
 
+import com.docanalyzer.metrics.MetricsValidator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -73,6 +74,43 @@ public class MetricsResult {
      * @param feedback The feedback explaining the score
      */
     public void addMetricResult(String name, int score, String feedback) {
+        addMetricResult(name, score, feedback, null);
+    }
+    
+    /**
+     * Adds a metric result to this metrics result with validation.
+     * 
+     * @param name The name of the metric
+     * @param score The score (1-5)
+     * @param feedback The feedback explaining the score
+     * @param validator The metrics validator to use for validation (optional)
+     * @throws IllegalArgumentException if validation fails
+     */
+    public void addMetricResult(String name, int score, String feedback, MetricsValidator validator) {
+        // Perform validation if validator is provided
+        if (validator != null) {
+            MetricsValidator.ValidationResult validationResult = validator.validateMetricResult(name, score);
+            validationResult.throwIfFailed();
+            
+            // Get the guideline text for this score if available
+            var metric = validator.getMetricDefinition(name);
+            if (metric != null) {
+                String guideline = metric.getGuideline(score);
+                
+                MetricResult result = MetricResult.builder()
+                        .name(name)
+                        .score(score)
+                        .feedback(feedback)
+                        .guideline(guideline)
+                        .build();
+                
+                metricResults.put(name, result);
+                recalculateOverallScore();
+                return;
+            }
+        }
+        
+        // Fallback to original behavior without validation
         MetricResult result = MetricResult.builder()
                 .name(name)
                 .score(score)

@@ -71,7 +71,7 @@ public class AnthropicClient {
             
             // Create messages array with system and user messages
             requestBody.putArray("messages")
-                    .add(createMessage("user", prompt));
+                    .add(createMessage( prompt));
             
             // Set request body
             httpPost.setEntity(new StringEntity(requestBody.toString(), ContentType.APPLICATION_JSON));
@@ -94,16 +94,15 @@ public class AnthropicClient {
                 JsonNode responseJson = objectMapper.readTree(responseBody);
                 JsonNode contentNode = responseJson.path("content");
                 
-                if (contentNode.isArray() && contentNode.size() > 0) {
+                if (contentNode.isArray() && !contentNode.isEmpty()) {
                     StringBuilder result = new StringBuilder();
                     for (JsonNode content : contentNode) {
                         if (content.has("text")) {
                             result.append(content.get("text").asText());
                         }
                     }
-                    String extractedText = result.toString();
-                    log.info("Extracted API response text: {}", extractedText);
-                    return extractedText;
+                    //log.info("Extracted API response text: {}", extractedText);
+                    return result.toString();
                 }
                 
                 log.error("Unexpected API response format: {}", responseBody);
@@ -117,14 +116,13 @@ public class AnthropicClient {
     
     /**
      * Creates a message object for the API request.
-     * 
-     * @param role The role (user or assistant)
+     *
      * @param content The message content
      * @return The message object
      */
-    private ObjectNode createMessage(String role, String content) {
+    private ObjectNode createMessage(String content) {
         ObjectNode message = objectMapper.createObjectNode();
-        message.put("role", role);
+        message.put("role", "user");
         message.put("content", content);
         return message;
     }

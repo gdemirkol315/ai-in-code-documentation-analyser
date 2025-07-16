@@ -74,7 +74,7 @@ public class Configuration {
             
             return Configuration.builder()
                     .anthropicApiKey(getProperty(properties, "anthropic.api.key", ""))
-                    .modelName(getProperty(properties, "anthropic.model", "claude-3-opus-20240229"))
+                    .modelName(getProperty(properties, "anthropic.model", "claude-sonnet-4-20250514"))
                     .maxTokens(getIntProperty(properties, "anthropic.max.tokens", 4096))
                     .maxTokensPerRequest(getIntProperty(properties, "anthropic.max.tokens.per.request", 100000))
                     .batchSize(getIntProperty(properties, "batch.size", 5))
@@ -97,7 +97,7 @@ public class Configuration {
     public static Configuration getDefaultConfiguration() {
         return Configuration.builder()
                 .anthropicApiKey(System.getenv("API_KEY"))
-                .modelName("claude-3-opus-20240229")
+                .modelName("claude-sonnet-4-20250514")
                 .maxTokens(4096)
                 .maxTokensPerRequest(100000)
                 .batchSize(5)

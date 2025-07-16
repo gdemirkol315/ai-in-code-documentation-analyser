@@ -1,5 +1,6 @@
 package com.docanalyzer.ai;
 
+import com.docanalyzer.metrics.MetricsValidator;
 import com.docanalyzer.model.MetricsResult;
 import lombok.extern.slf4j.Slf4j;
 
@@ -16,12 +17,30 @@ import java.util.regex.Pattern;
 @Slf4j
 public class ResponseParser {
     
+    private final MetricsValidator metricsValidator;
+    
     // Patterns for extracting information from the API response
     private static final Pattern METHOD_PATTERN = Pattern.compile("METHOD (\\d+) [^\\n]+ EVALUATION:", Pattern.CASE_INSENSITIVE);
     private static final Pattern METRIC_PATTERN = Pattern.compile("(?:^|\\n)\\s*([A-Za-z][A-Za-z ]+?):\\s*(\\d+)(?:\\s|$)", Pattern.MULTILINE);
     private static final Pattern JUSTIFICATION_PATTERN = Pattern.compile("Justification:\\s*(.+?)(?=\\n\\n|\\n[A-Z]|$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern RECOMMENDATIONS_PATTERN = Pattern.compile("Recommendations:\\s*(.+?)(?=\\n\\n|\\n[A-Z]|$|---)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
     private static final Pattern RECOMMENDATION_ITEM_PATTERN = Pattern.compile("\\d+\\.\\s*(.+?)(?=\\n\\d+\\.|$)", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+    
+    /**
+     * Creates a new ResponseParser with the given MetricsValidator.
+     * 
+     * @param metricsValidator The validator to use for validating parsed metrics
+     */
+    public ResponseParser(MetricsValidator metricsValidator) {
+        this.metricsValidator = metricsValidator;
+    }
+    
+    /**
+     * Creates a new ResponseParser without validation (for backward compatibility).
+     */
+    public ResponseParser() {
+        this.metricsValidator = null;
+    }
     
     /**
      * Parses a batch response from the API.
@@ -89,7 +108,7 @@ public class ResponseParser {
         MetricsResult result = new MetricsResult();
         
         try {
-            log.debug("Parsing method evaluation: {}", methodEvaluation);
+            //log.debug("Parsing method evaluation: {}", methodEvaluation);
             
             // Extract metrics
             Matcher metricMatcher = METRIC_PATTERN.matcher(methodEvaluation);
@@ -110,7 +129,20 @@ public class ResponseParser {
                     log.debug("Found justification for '{}': {}", metricName, justification);
                 }
 
-                result.addMetricResult(metricName, score, justification);
+                // Use validation if validator is available
+                if (metricsValidator != null) {
+                    try {
+                        result.addMetricResult(metricName, score, justification, metricsValidator);
+                        log.debug("Successfully validated and added metric '{}' with score {}", metricName, score);
+                    } catch (IllegalArgumentException e) {
+                        log.warn("Metric validation failed for '{}' with score {}: {}", metricName, score, e.getMessage());
+                        // Still add the metric without validation for robustness
+                        result.addMetricResult(metricName, score, justification);
+                    }
+                } else {
+                    log.warn("Metric validation is not available!!");
+                    result.addMetricResult(metricName, score, justification);
+                }
             }
             
             log.debug("Total metrics found: {}", metricCount);
