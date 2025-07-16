@@ -102,7 +102,7 @@ public class AnthropicClient {
                         }
                     }
                     String extractedText = result.toString();
-                    log.info("Extracted API response text: {}", extractedText);
+                    //log.info("Extracted API response text: {}", extractedText);
                     return extractedText;
                 }
                 
