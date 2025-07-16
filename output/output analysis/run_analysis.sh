@@ -58,6 +58,9 @@ poetry add numpy scipy matplotlib seaborn krippendorff
 poetry lock
 
 # Run the script
+echo "Running descriptive_statistics.py..."
+poetry run python descriptive_statistics.py
+
 echo "Running krippendorff_analysis.py..."
 poetry run python krippendorff_analysis.py
 
