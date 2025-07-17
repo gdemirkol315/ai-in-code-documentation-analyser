@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<javadoc-analysis-report generated-at="2025-07-17T16:47:08.90040355" total-methods="11" model="claude-sonnet-4-20250514" temperature="0.0" max_tokens="4096">
+  <summary>
+    <total-methods>11</total-methods>
+    <methods-with-metrics>11</methods-with-metrics>
+    <average-score>3.12</average-score>
+  </summary>
+  <methods>
+    <method>
+      <name>ceil</name>
+      <class-name>Assess</class-name>
+      <package-name></package-name>
+      <file-path>src/main/resources/Assess.java</file-path>
+      <signature>public static double ceil(double number)</signature>
+      <return-type>double</return-type>
+      <start-line>0</start-line>
+      <end-line>0</end-line>
+      <parameters>
+        <parameter name="number" type="double"></parameter>
+      </parameters>
+      <javadoc>
+        <description>Returns the smallest (closest to negative infinity)</description>
+        <return-tag>the smallest (closest to negative infinity) of given {</return-tag>
+        <param-tags>
+          <param-tag name="number">
+            <description>the number</description>
+          </param-tag>
+        </param-tags>
+        <other-tags>
+          <other-tag name="code">
+            <content>number}</content>
+          </other-tag>
+        </other-tags>
+        <raw-text>/**
+     * Returns the smallest (closest to negative infinity)
+     *
+     * @param number the number
+     * @return the smallest (closest to negative infinity) of given
+     * {@code number}
+     */</raw-text>
+      </javadoc>
+      <metrics-result>
+        <overall-score>1.67</overall-score>
+        <metric-results>
+          <metric-result name="Comprehensibility" score="2">
+            <feedback>The description is incomplete and confusing. It starts with &amp;quot;Returns the smallest (closest to negative infinity)&amp;quot; but doesn&amp;apos;t finish the thought properly. The return description repeats the same incomplete phrase, making it unclear what the method actually does.</feedback>
+          </metric-result>
+          <metric-result name="Alignment" score="1">
+            <feedback>The documentation contradicts the actual code behavior. The description suggests it returns the smallest value closest to negative infinity, but the code actually implements a ceiling function that returns the smallest integer greater than or equal to the input number.</feedback>
+          </metric-result>
+          <metric-result name="Completeness" score="2">
+            <feedback>While it includes a parameter description and return value, the parameter description is too generic (&amp;quot;the number&amp;quot;), and the method description is incomplete and misleading. No mention of edge cases or the actual ceiling operation being performed.</feedback>
+          </metric-result>
+        </metric-results>
+        <recommendations>
+          <recommendation>Fix the method description to accurately describe the ceiling operation</recommendation>
+          <recommendation>Provide a more descriptive parameter explanation</recommendation>
+          <recommendation>Complete the truncated description in both the main text and return documentation</recommendation>
+          <recommendation>Consider documenting edge cases like handling of whole numbers</recommendation>
+        </recommendations>
+      </metrics-result>
+    </method>
+    <method>
+      <name>sort</name>
+      <class-name>Assess</class-name>
+      <package-name></package-name>
+      <file-path>src/main/resources/Assess.java</file-path>
+      <signature>public T[] sort(T[] array)</signature>
+      <return-type>T[]</return-type>
+      <start-line>0</start-line>
+      <end-line>0</end-line>
+      <parameters>
+        <parameter name="array" type="T[]"></parameter>
+      </parameters>
+      <javadoc>
+        <description>Implements generic bubble sort algorithm.</description>
+        <return-tag>the sorted array.</return-tag>
+        <param-tags>
+          <param-tag name="array">
+            <description>the array to be sorted.</description>
+          </param-tag>
+          <param-tag name="&lt;T&gt;">
+            <description>the type of elements in the array.</description>
+          </param-tag>
+        </param-tags>
+        <raw-text>/**
+     * Implements generic bubble sort algorithm.
+     *
+     * @param array the array to be sorted.
+     * @param &amp;lt;T&amp;gt;   the type of elements in the array.
+     * @return the sorted array.
+     */</raw-text>
+      </javadoc>
+      <metrics-result>
+        <overall-score>3.67</overall-score>
+        <metric-results>
+          <metric-result name="Comprehensibility" score="4">
+            <feedback>The documentation is clear and concise, accurately describing that it implements a bubble sort algorithm. The language is straightforward and easy to understand.</feedback>
+          </metric-result>
+          <metric-result name="Alignment" score="4">
+            <feedback>The documentation accurately reflects that the code implements bubble sort and returns a sorted array. However, it doesn&amp;apos;t mention that the method modifies the original array in place, which is an important behavioral detail.</feedback>
+          </metric-result>
+          <metric-result name="Completeness" score="3">
+            <feedback>Documents all parameters and returns but lacks important details about the sorting behavior (ascending order), in-place modification, and doesn&amp;apos;t mention potential exceptions or requirements for the generic type T.</feedback>
+          </metric-result>
+        </metric-results>
+        <recommendations>
+          <recommendation>Specify that sorting is performed in ascending order</recommendation>
+          <recommendation>Mention that the original array is modified in place</recommendation>
+          <recommendation>Document the requirement that type T must be comparable</recommendation>
+          <recommendation>Consider mentioning time complexity characteristics</recommendation>
+        </recommendations>
+      </metrics-result>
+    </method>
+    <method>
+      <name>get</name>
+      <class-name>Assess</class-name>
+      <package-name></package-name>
+      <file-path>src/main/resources/Assess.java</file-path>
+      <signature>public static LogFile get(PropertyResolver propertyResolver)</signature>
+      <return-type>LogFile</return-type>
+      <start-line>0</start-line>
+      <end-line>0</end-line>
+      <parameters>
+        <parameter name="propertyResolver" type="PropertyResolver"></parameter>
+      </parameters>
+      <javadoc>
+        <description>Get a {</description>
+        <return-tag>a {</return-tag>
+        <param-tags>
+          <param-tag name="propertyResolver">
+            <description>the {</description>
+          </param-tag>
+        </param-tags>
+        <other-tags>
+          <other-tag name="link">
+            <content>LogFile} from the given Spring {</content>
+          </other-tag>
+          <other-tag name="link">
+            <content>Environment}.</content>
+          </other-tag>
+          <other-tag name="link">
+            <content>PropertyResolver} used to obtain the logging properties</content>
+          </other-tag>
+          <other-tag name="link">
+            <content>LogFile} or {</content>
+          </other-tag>
+          <other-tag name="code">
+            <content>null} if the environment didn&amp;apos;t contain any suitable properties</content>
+          </other-tag>
+        </other-tags>
+        <raw-text>/**
+     * Get a {@link LogFile} from the given Spring {@link Environment}.
+     *
+     * @param propertyResolver the {@link PropertyResolver} used to obtain the logging
+     *                         properties
+     * @return a {@link LogFile} or {@code null} if the environment didn&amp;apos;t contain any
+     * suitable properties
+     */</raw-text>
+      </javadoc>
+      <metrics-result>
+        <overall-score>5.00</overall-score>
+        <metric-results>
+          <metric-result name="Comprehensibility" score="5">
+            <feedback>The documentation is exceptionally clear and easy to understand. It clearly explains what the method does, what it takes as input, and what it returns, including the null case.</feedback>
+          </metric-result>
+          <metric-result name="Alignment" score="5">
+            <feedback>The documentation perfectly aligns with the code behavior, accurately describing how it uses the PropertyResolver to obtain logging properties and returns null when no suitable properties are found.</feedback>
+          </metric-result>
+          <metric-result name="Completeness" score="5">
+            <feedback>Comprehensive documentation covering the method&amp;apos;s purpose, parameter usage, return value including the null case, and the specific context of obtaining logging properties from the environment.</feedback>
+          </metric-result>
+        </metric-results>
+      </metrics-result>
+    </method>
+    <method>
+      <name>setCSSClass</name>
+      <class-name>Assess</class-name>
+      <package-name></package-name>
+      <file-path>src/main/resources/Assess.java</file-path>
+      <signature>public static void setCSSClass(Widget widget, String value)</signature>
+      <return-type>void</return-type>
+      <start-line>0</start-line>
+      <end-line>0</end-line>
+      <parameters>
+        <parameter name="widget" type="Widget"></parameter>
+        <parameter name="value" type="String"></parameter>
+      </parameters>
+      <javadoc>
+        <description>Set value to a widget as a CSSSWTConstants.CSS_CLASS_NAME_KEY value.</description>
+        <raw-text>/**
+     * Set value to a widget as a CSSSWTConstants.CSS_CLASS_NAME_KEY value.
+     *
+     * @param widget
+     * @param value
+     */</raw-text>
+      </javadoc>
+      <metrics-result>
+        <overall-score>2.00</overall-score>
+        <metric-results>
+          <metric-result name="Comprehensibility" score="2">
+            <feedback>The description is unclear and uses technical implementation details that don&amp;apos;t help users understand the method&amp;apos;s purpose. The wording is awkward and doesn&amp;apos;t clearly explain what the method accomplishes.</feedback>
+          </metric-result>
+          <metric-result name="Alignment" score="3">
+            <feedback>The documentation mostly aligns with the code but focuses on implementation details rather than the user-facing purpose of setting a CSS class on a widget.</feedback>
+          </metric-result>
+          <metric-result name="Completeness" score="1">
+            <feedback>Missing most essential information - parameter descriptions are completely absent, no return value documentation (though void), and the main description is unclear about the method&amp;apos;s actual purpose.</feedback>
+          </metric-result>
+        </metric-results>
+        <recommendations>
+          <recommendation>Rewrite the description to clearly explain that it sets a CSS class name on a widget</recommendation>
+          <recommendation>Add proper parameter descriptions for both widget and value parameters</recommendation>
+          <recommendation>Remove implementation details from the main description</recommendation>
+          <recommendation>Focus on what the method does from a user perspective</recommendation>
+        </recommendations>
+      </metrics-result>
+    </method>
+    <method>
+      <name>getValueDisplayString</name>
+      <class-name>Assess</class-name>
+      <package-name></package-name>
+      <file-path>src/main/resources/Assess.java</file-path>
+      <signature>String getValueDisplayString(NotNull DBSTypedObject, Nullable Object, NotNull DBDDisplayFormat)</signature>
+      <return-type>String</return-type>
+      <start-line>0</start-line>
+      <end-line>0</end-line>
+      <parameters>
+        <parameter name="DBSTypedObject" type="NotNull"></parameter>
+        <parameter name="Object" type="Nullable"></parameter>
+        <parameter name="DBDDisplayFormat" type="NotNull"></parameter>
+      </parameters>
+      <javadoc>
+        <description>Converts value to human readable format</description>
+        <return-tag>formatted string</return-tag>
+        <param-tags>
+          <param-tag name="column">
+            <description>column</description>
+          </param-tag>
+          <param-tag name="value">
+            <description>value</description>
+          </param-tag>
+          <param-tag name="format">
+            <description>string format</description>
+          </param-tag>
+        </param-tags>
+        <raw-text>/**
+     * Converts value to human readable format
+     *
+     * @param column column
+     * @param value  value
+     * @param format string format
+     * @return formatted string
+     */</raw-text>
+      </javadoc>
+      <metrics-result>
+        <overall-score>3.67</overall-score>
+        <metric-results>
+          <metric-result name="Comprehensibility" score="4">
+            <feedback>The description is clear and concise, effectively communicating that the method converts values to a human-readable format. The language is straightforward and easy to understand.</feedback>
+          </metric-result>
+          <metric-result name="Alignment" score="4">
+            <feedback>The documentation accurately reflects the method&amp;apos;s purpose of formatting values for display, though without seeing the method body, it&amp;apos;s difficult to verify complete alignment with implementation details.</feedback>
+          </metric-result>
+          <metric-result name="Completeness" score="3">
+            <feedback>Documents all parameters and return value, but the parameter descriptions are somewhat generic. Missing information about potential exceptions, edge cases, and specific formatting behaviors that the format parameter controls.</feedback>
+          </metric-result>
+        </metric-results>
+        <recommendations>
+          <recommendation>Provide more specific descriptions for each parameter, especially explaining what types of objects the column and value parameters expect</recommendation>
+          <recommendation>Explain how the format parameter affects the output</recommendation>
+          <recommendation>Document potential exceptions or error conditions</recommendation>
+          <recommendation>Consider providing examples of typical usage or output formats</recommendation>
+        </recommendations>
+      </metrics-result>
+    </method>
+    <method>
+      <name>sendMouseEvent</name>
+      <class-name>Assess</class-name>
+      <package-name></package-name>
+      <file-path>src/main/resources/Assess.java</file-path>
+      <signature>public void sendMouseEvent(int mouseButton, int column, int row, boolean pressed)</signature>
+      <return-type>void</return-type>
+      <start-line>0</start-line>
+      <end-line>0</end-line>
+      <parameters>
+        <parameter name="mouseButton" type="int"></parameter>
+        <parameter name="column" type="int"></parameter>
+        <parameter name="row" type="int"></parameter>
+        <parameter name="pressed" type="boolean"></parameter>
+      </parameters>
+      <javadoc>
+        <description>@param mouseButton one of the MOUSE_* constants of this class.</description>
+        <raw-text>/**
+     * @param mouseButton one of the MOUSE_* constants of this class.
+     */</raw-text>
+      </javadoc>
+      <metrics-result>
+        <overall-score>1.67</overall-score>
+        <metric-results>
+          <metric-result name="Comprehensibility" score="2">
+            <feedback>The documentation is unclear and provides minimal information. It only mentions that mouseButton should be one of the MOUSE_* constants but doesn&amp;apos;t explain what the method does or what the other parameters are for.</feedback>
+          </metric-result>
+          <metric-result name="Alignment" score="2">
+            <feedback>The documentation partially aligns with the code but has significant discrepancies. It only documents one parameter while the method has four parameters, and doesn&amp;apos;t mention the complex mouse event handling logic.</feedback>
+          </metric-result>
+          <metric-result name="Completeness" score="1">
+            <feedback>Missing most essential information including method description, three out of four parameters (column, row, pressed), return value documentation, and no mention of the complex mouse tracking behavior.</feedback>
+          </metric-result>
+        </metric-results>
+        <recommendations>
+          <recommendation>Add a comprehensive method description explaining that it sends mouse events to a terminal session</recommendation>
+          <recommendation>Document all parameters: column, row, and pressed</recommendation>
+          <recommendation>Explain the mouse tracking protocols and coordinate clamping behavior</recommendation>
+          <recommendation>Describe the different handling for SGR vs standard mouse protocols</recommendation>
+        </recommendations>
+      </metrics-result>
+    </method>
+    <method>
+      <name>LFUCache</name>
+      <class-name>Assess</class-name>
+      <package-name></package-name>
+      <file-path>src/main/resources/Assess.java</file-path>
+      <signature>public LFUCache(final int, final float)</signature>
+      <return-type>public</return-type>
+      <start-line>0</start-line>
+      <end-line>0</end-line>
+      <parameters>
+        <parameter name="int" type="final"></parameter>
+        <parameter name="float" type="final"></parameter>
+      </parameters>
+      <javadoc>
+        <description>Constructs and initializes cache with specified capacity and eviction factor. Unacceptable parameter values followed with {</description>
+        <param-tags>
+          <param-tag name="maxCapacity">
+            <description>cache max capacity</description>
+          </param-tag>
+          <param-tag name="evictionFactor">
+            <description>cache proceedEviction factor</description>
+          </param-tag>
+        </param-tags>
+        <other-tags>
+          <other-tag name="link">
+            <content>IllegalArgumentException}.</content>
+          </other-tag>
+        </other-tags>
+        <raw-text>/**
+     * Constructs and initializes cache with specified capacity and eviction
+     * factor. Unacceptable parameter values followed with
+     * {@link IllegalArgumentException}.
+     *
+     * @param maxCapacity    cache max capacity
+     * @param evictionFactor cache proceedEviction factor
+     */</raw-text>
+      </javadoc>
+      <metrics-result>
+        <overall-score>3.33</overall-score>
+        <metric-results>
+          <metric-result name="Comprehensibility" score="4">
+            <feedback>The documentation is clear and concise, explaining the constructor&amp;apos;s purpose and mentioning exception handling. The language is easy to understand with only minor room for improvement.</feedback>
+          </metric-result>
+          <metric-result name="Alignment" score="3">
+            <feedback>The documentation mostly aligns with the code but has minor discrepancies. It mentions IllegalArgumentException correctly but doesn&amp;apos;t specify the exact conditions that trigger it.</feedback>
+          </metric-result>
+          <metric-result name="Completeness" score="3">
+            <feedback>Documents the basic purpose and parameters but lacks specific details about parameter constraints (maxCapacity &amp;gt; 0, evictionFactor range 0-1) and doesn&amp;apos;t explain what the eviction factor actually controls.</feedback>
+          </metric-result>
+        </metric-results>
+        <recommendations>
+          <recommendation>Specify the exact constraints for maxCapacity (must be &amp;gt; 0)</recommendation>
+          <recommendation>Detail the evictionFactor range (0 &amp;lt; evictionFactor &amp;lt;= 1) and explain its purpose</recommendation>
+          <recommendation>Clarify what &amp;quot;proceedEviction factor&amp;quot; means in practical terms</recommendation>
+        </recommendations>
+      </metrics-result>
+    </method>
+    <method>
+      <name>get</name>
+      <class-name>Assess</class-name>
+      <package-name></package-name>
+      <file-path>src/main/resources/Assess.java</file-path>
+      <signature>T get(Class&amp;lt;T&amp;gt; type) throws IllegalStateException</signature>
+      <return-type>T</return-type>
+      <start-line>0</start-line>
+      <end-line>0</end-line>
+      <parameters>
+        <parameter name="type" type="Class&lt;T&gt;"></parameter>
+      </parameters>
+      <javadoc>
+        <description>Return an instance from the context if the type has been registered. The instance will be created if it hasn&amp;apos;t been accessed previously.</description>
+        <return-tag>the instance managed by the context</return-tag>
+        <param-tags>
+          <param-tag name="&lt;T&gt;">
+            <description>the instance type</description>
+          </param-tag>
+          <param-tag name="type">
+            <description>the instance type</description>
+          </param-tag>
+        </param-tags>
+        <throws-tags>
+          <throws-tag exception-type="IllegalStateException">
+            <description>if the type has not been registered</description>
+          </throws-tag>
+        </throws-tags>
+        <raw-text>/**
+     * Return an instance from the context if the type has been registered. The instance
+     * will be created if it hasn&amp;apos;t been accessed previously.
+     *
+     * @param &amp;lt;T&amp;gt;  the instance type
+     * @param type the instance type
+     * @return the instance managed by the context
+     * @throws IllegalStateException if the type has not been registered
+     */</raw-text>
+      </javadoc>
+      <metrics-result>
+        <overall-score>5.00</overall-score>
+        <metric-results>
+          <metric-result name="Comprehensibility" score="5">
+            <feedback>Exceptionally clear, concise, and easy to understand. The documentation clearly explains the method&amp;apos;s purpose, behavior, and exception conditions.</feedback>
+          </metric-result>
+          <metric-result name="Alignment" score="5">
+            <feedback>Documentation perfectly aligns with the method signature and described behavior, including the generic type handling and exception specification.</feedback>
+          </metric-result>
+          <metric-result name="Completeness" score="5">
+            <feedback>Perfect documentation covering description, generic type parameter, input parameter, return value, and exception handling comprehensively.</feedback>
+          </metric-result>
+        </metric-results>
+      </metrics-result>
+    </method>
+    <method>
+      <name>readFile</name>
+      <class-name>Assess</class-name>
+      <package-name></package-name>
+      <file-path>src/main/resources/Assess.java</file-path>
+      <signature>private static String readFile(final String, final String)</signature>
+      <return-type>String</return-type>
+      <start-line>0</start-line>
+      <end-line>0</end-line>
+      <parameters>
+        <parameter name="String" type="final"></parameter>
+        <parameter name="String" type="final"></parameter>
+      </parameters>
+      <javadoc>
+        <description>Tests whether the {</description>
+        <return-tag>value The env var value or null.</return-tag>
+        <param-tags>
+          <param-tag name="envVarFile">
+            <description>The path to a /proc/N/environ file.</description>
+          </param-tag>
+          <param-tag name="key">
+            <description>The env var key to find.</description>
+          </param-tag>
+        </param-tags>
+        <other-tags>
+          <other-tag name="code">
+            <content>/proc/N/environ} file at the given path string contains a specific line prefix.</content>
+          </other-tag>
+        </other-tags>
+        <raw-text>/**
+     * Tests whether the {@code /proc/N/environ} file at the given path string contains a specific line prefix.
+     *
+     * @param envVarFile The path to a /proc/N/environ file.
+     * @param key        The env var key to find.
+     * @return value The env var value or null.
+     */</raw-text>
+      </javadoc>
+      <metrics-result>
+        <overall-score>2.67</overall-score>
+        <metric-results>
+          <metric-result name="Comprehensibility" score="3">
+            <feedback>Mostly clear but with some confusing elements. The description mentions &amp;quot;tests whether&amp;quot; but the method actually returns a value, not a boolean test result.</feedback>
+          </metric-result>
+          <metric-result name="Alignment" score="2">
+            <feedback>Documentation partially aligns with code but has significant discrepancies. The description suggests it &amp;quot;tests&amp;quot; for a line prefix, but the method actually extracts and returns the environment variable value.</feedback>
+          </metric-result>
+          <metric-result name="Completeness" score="3">
+            <feedback>Documents parameters and return value but lacks exception handling information (IOException is caught and handled) and doesn&amp;apos;t explain the null-byte splitting logic.</feedback>
+          </metric-result>
+        </metric-results>
+        <recommendations>
+          <recommendation>Correct the description to indicate the method extracts environment variable values, not just tests for presence</recommendation>
+          <recommendation>Explain the null-byte character splitting used in /proc/N/environ files</recommendation>
+          <recommendation>Document that IOException is handled internally and returns null on file read errors</recommendation>
+          <recommendation>Clarify the return value description (returns the env var value, not just &amp;quot;value&amp;quot;)</recommendation>
+        </recommendations>
+      </metrics-result>
+    </method>
+    <method>
+      <name>visitSymlink</name>
+      <class-name>Assess</class-name>
+      <package-name></package-name>
+      <file-path>src/main/resources/Assess.java</file-path>
+      <signature>public void visitSymlink(File link, String target, String relativePath) throws IOException </signature>
+      <return-type>void</return-type>
+      <start-line>0</start-line>
+      <end-line>0</end-line>
+      <parameters>
+        <parameter name="link" type="File"></parameter>
+        <parameter name="target" type="String"></parameter>
+        <parameter name="relativePath" type="String"></parameter>
+      </parameters>
+      <javadoc>
+        <description>Some visitors can handle symlinks as symlinks. Those visitors should implement this method to provide a different handling for symlink. &amp;lt;p&amp;gt; This method is invoked by those {</description>
+        <other-tags>
+          <other-tag name="link">
+            <content>DirScanner}s that can handle symlinks as symlinks. (Not every {</content>
+          </other-tag>
+          <other-tag name="link">
+            <content>DirScanner}s are capable of doing that, as proper symlink handling requires letting visitors decide whether or not to descend into a symlink directory.)</content>
+          </other-tag>
+        </other-tags>
+        <raw-text>/**
+     * Some visitors can handle symlinks as symlinks. Those visitors should implement
+     * this method to provide a different handling for symlink.
+     * &amp;lt;p&amp;gt;
+     * This method is invoked by those {@link DirScanner}s that can handle symlinks as symlinks.
+     * (Not every {@link DirScanner}s are capable of doing that, as proper symlink handling requires
+     * letting visitors decide whether or not to descend into a symlink directory.)
+     */</raw-text>
+      </javadoc>
+      <metrics-result>
+        <overall-score>3.33</overall-score>
+        <metric-results>
+          <metric-result name="Comprehensibility" score="4">
+            <feedback>Clear and concise explanation of the method&amp;apos;s purpose and context within the visitor pattern, with good explanation of when it&amp;apos;s called.</feedback>
+          </metric-result>
+          <metric-result name="Alignment" score="4">
+            <feedback>Documentation accurately reflects the method&amp;apos;s role and behavior with very minor omissions. It correctly describes the symlink handling concept.</feedback>
+          </metric-result>
+          <metric-result name="Completeness" score="2">
+            <feedback>Covers basic description but missing details on all three parameters and doesn&amp;apos;t document the IOException that can be thrown.</feedback>
+          </metric-result>
+        </metric-results>
+        <recommendations>
+          <recommendation>Document all parameters: link (the symlink file), target (symlink target path), relativePath (relative path in traversal)</recommendation>
+          <recommendation>Document the IOException that can be thrown</recommendation>
+          <recommendation>Explain the relationship between this method and the default visit() method that gets called</recommendation>
+        </recommendations>
+      </metrics-result>
+    </method>
+    <method>
+      <name>commitNameChange</name>
+      <class-name>Assess</class-name>
+      <package-name></package-name>
+      <file-path>src/main/resources/Assess.java</file-path>
+      <signature>protected void commitNameChange(PropertyChangeEvent evt)</signature>
+      <return-type>void</return-type>
+      <start-line>0</start-line>
+      <end-line>0</end-line>
+      <parameters>
+        <parameter name="evt" type="PropertyChangeEvent"></parameter>
+      </parameters>
+      <javadoc>
+        <description>Handles change in name when committing a direct edit</description>
+        <raw-text>/**
+     * Handles change in name when committing a direct edit
+     */</raw-text>
+      </javadoc>
+      <metrics-result>
+        <overall-score>2.33</overall-score>
+        <metric-results>
+          <metric-result name="Comprehensibility" score="3">
+            <feedback>The documentation provides a basic understanding of what the method does - it handles name changes during direct editing. However, the description is somewhat vague and doesn&amp;apos;t clearly explain the relationship between &amp;quot;name change&amp;quot; and the actual operations performed (setting text, making visible, refreshing visuals). The term &amp;quot;committing a direct edit&amp;quot; could be clearer for developers unfamiliar with the editing context.</feedback>
+          </metric-result>
+          <metric-result name="Alignment" score="2">
+            <feedback>The documentation partially aligns with the code but has significant discrepancies. While it mentions handling &amp;quot;name change&amp;quot; and &amp;quot;committing a direct edit,&amp;quot; the actual code performs several specific operations: getting a NoteFigure, setting text from a note object, making the figure visible, and refreshing visuals. The documentation doesn&amp;apos;t accurately describe these concrete actions and the PropertyChangeEvent parameter is completely ignored in the description.</feedback>
+          </metric-result>
+          <metric-result name="Completeness" score="2">
+            <feedback>The documentation covers only a basic description but is missing critical information. It lacks documentation for the PropertyChangeEvent parameter, doesn&amp;apos;t specify what the method returns (void), and provides no information about potential exceptions or the specific steps the method performs. The relationship between the parameter and the method&amp;apos;s behavior is not explained.</feedback>
+          </metric-result>
+        </metric-results>
+        <recommendations>
+          <recommendation>Add @param documentation explaining the PropertyChangeEvent parameter and how it triggers the name change handling</recommendation>
+          <recommendation>Provide a more detailed description of the specific operations performed (updating NoteFigure text, setting visibility, refreshing visuals)</recommendation>
+          <recommendation>Explain the relationship between the property change event and the note object&amp;apos;s text update</recommendation>
+          <recommendation>Add @return documentation indicating this is a void method</recommendation>
+          <recommendation>Consider documenting any potential exceptions that might be thrown during the operations</recommendation>
+          <recommendation>Clarify what &amp;quot;direct edit&amp;quot; means in this context for better comprehensibility</recommendation>
+        </recommendations>
+      </metrics-result>
+    </method>
+  </methods>
+</javadoc-analysis-report>

@@ -1,4 +1,14 @@
 {
+  "best-example": {
+    "description": "Example of documentation that scores 5 on all metrics (Completeness, Comprehensibility, Alignment)",
+    "code": "public UserProfile getUserProfile(String userId) {\n    if (userId == null || userId.isEmpty()) {\n        throw new IllegalArgumentException(\"User ID must not be null or empty\");\n    }\n    try {\n        return database.findUserById(userId);\n    } catch (SQLException e) {\n        throw new DatabaseException(\"Failed to retrieve user\", e);\n    }\n}",
+    "documentation": "/**\n * Retrieves a user's profile based on the given user ID.\n *\n * @param userId the unique identifier of the user\n * @return the user's profile as a {@link UserProfile} object, or {@code null} if not found\n * @throws IllegalArgumentException if {@code userId} is null or empty\n * @throws DatabaseException if a database error occurs during retrieval\n */"
+  },
+  "worst-example": {
+    "description": "Example of documentation that scores 1 on all metrics (Completeness, Comprehensibility, Alignment)",
+    "code": "public UserProfile getUserProfile(String userId) {\n    if (userId == null || userId.isEmpty()) {\n        throw new IllegalArgumentException(\"User ID must not be null or empty\");\n    }\n    try {\n        return database.findUserById(userId);\n    } catch (SQLException e) {\n        throw new DatabaseException(\"Failed to retrieve user\", e);\n    }\n}",
+    "documentation": "/**\n * Gets user.\n */"
+  },
   "metrics": [
     {
       "name": "Completeness",
