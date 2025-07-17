@@ -78,8 +78,8 @@ public class Main {
             }
             
             if (!metricsLoaded) {
-                log.info("Creating default metrics file");
-                metricsManager.createDefaultMetricsFile(config.getMetricsDefinitionsPath());
+                log.error("Could not load metrics file!!!");
+                return;
             }
             
             // Get formatted guidelines
@@ -133,7 +133,7 @@ public class Main {
             }
             
             // Process methods in batches
-            BatchProcessor batchProcessor = new BatchProcessor(config);
+            BatchProcessor batchProcessor = new BatchProcessor(config, metricsManager);
             batchProcessor.processBatches(methodsWithJavadoc, guidelines);
             
             // Generate report

@@ -1,6 +1,8 @@
 package com.docanalyzer.ai;
 
+import com.docanalyzer.metrics.MetricsManager;
 import com.docanalyzer.model.Method;
+import com.docanalyzer.model.Metric;
 import com.docanalyzer.util.TokenCounter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,6 +13,17 @@ import java.util.List;
  */
 @Slf4j
 public class PromptGenerator {
+    
+    private final MetricsManager metricsManager;
+    
+    /**
+     * Creates a new PromptGenerator with the specified MetricsManager.
+     * 
+     * @param metricsManager The metrics manager to use for dynamic metric generation
+     */
+    public PromptGenerator(MetricsManager metricsManager) {
+        this.metricsManager = metricsManager;
+    }
 
     /**
      * Generates a prompt for a batch of methods.
@@ -53,14 +66,12 @@ public class PromptGenerator {
         
         for (int i = 0; i < methods.size(); i++) {
             promptBuilder.append("METHOD ").append(i + 1).append(" [method name] EVALUATION:\n");
-            promptBuilder.append("Comprehensibility: [rating 1-5]\n");
-            promptBuilder.append("Justification: [explanation]\n\n");
             
-            promptBuilder.append("Alignment: [rating 1-5]\n");
-            promptBuilder.append("Justification: [explanation]\n\n");
-
-            promptBuilder.append("Completeness: [rating 1-5]\n");
-            promptBuilder.append("Justification: [explanation]\n\n");
+            // Dynamically generate metric format based on loaded metrics
+            for (Metric metric : metricsManager.getAllMetrics()) {
+                promptBuilder.append(metric.getName()).append(": [rating score]\n");
+                promptBuilder.append("Justification: [explanation]\n\n");
+            }
             
             promptBuilder.append("Overall Assessment: [brief summary]\n\n");
             promptBuilder.append("Recommendations:\n");
@@ -126,15 +137,5 @@ public class PromptGenerator {
             promptBuilder.append("Return Type: ").append(method.getReturnType()).append("\n");
         }
     }
-    
-    /**
-     * Generates a prompt for a single method.
-     * 
-     * @param method The method
-     * @param guidelines The evaluation guidelines
-     * @return The generated prompt
-     */
-    public String generateSingleMethodPrompt(Method method, String guidelines) {
-        return generateBatchPrompt(List.of(method), guidelines);
-    }
+
 }

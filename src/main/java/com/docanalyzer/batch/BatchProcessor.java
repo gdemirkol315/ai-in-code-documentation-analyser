@@ -4,6 +4,7 @@ import com.docanalyzer.ai.AnthropicClient;
 import com.docanalyzer.ai.PromptGenerator;
 import com.docanalyzer.ai.ResponseParser;
 import com.docanalyzer.config.Configuration;
+import com.docanalyzer.metrics.MetricsManager;
 import com.docanalyzer.metrics.MetricsValidator;
 import com.docanalyzer.model.Method;
 import com.docanalyzer.model.MetricsResult;
@@ -29,16 +30,17 @@ public class BatchProcessor {
     private ResponseParser responseParser;
     
     /**
-     * Creates a new BatchProcessor with the specified configuration.
+     * Creates a new BatchProcessor with the specified configuration and metrics manager.
      * 
      * @param config The configuration
+     * @param metricsManager The metrics manager for dynamic metric handling
      */
-    public BatchProcessor(Configuration config) {
+    public BatchProcessor(Configuration config, MetricsManager metricsManager) {
         this.defaultBatchSize = config.getBatchSize();
         this.maxTokensPerRequest = config.getMaxTokensPerRequest();
         this.tokenCounter = new TokenCounter();
         this.anthropicClient = new AnthropicClient(config);
-        this.promptGenerator = new PromptGenerator();
+        this.promptGenerator = new PromptGenerator(metricsManager);
         
         // Create MetricsValidator and pass it to ResponseParser
         try {

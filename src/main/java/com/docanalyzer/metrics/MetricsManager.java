@@ -116,84 +116,6 @@ public class MetricsManager {
     }
     
     /**
-     * Creates a default set of metrics.
-     * 
-     * @return A list of default metrics
-     */
-    public static List<Metric> createDefaultMetrics() {
-        List<Metric> defaultMetrics = new ArrayList<>();
-        
-        // Completeness metric
-        Metric completeness = Metric.builder()
-                .name("Completeness")
-                .description("Measures how thoroughly the documentation covers all aspects of the method")
-                .weight(1.0)
-                .build();
-        
-        completeness.setGuideline(1, "Missing most essential information (parameters, return values, purpose)");
-        completeness.setGuideline(2, "Covers basic purpose but missing details on parameters or returns");
-        completeness.setGuideline(3, "Documents all parameters and returns but lacks exception handling or edge cases");
-        completeness.setGuideline(4, "Comprehensive coverage with minor omissions");
-        completeness.setGuideline(5, "Perfect documentation covering purpose, parameters, returns, exceptions, and edge cases");
-        
-        defaultMetrics.add(completeness);
-        
-        // Clarity metric
-        Metric clarity = Metric.builder()
-                .name("Clarity")
-                .description("Evaluates how clear and understandable the documentation is")
-                .weight(1.0)
-                .build();
-        
-        clarity.setGuideline(1, "Confusing or misleading documentation");
-        clarity.setGuideline(2, "Unclear wording with ambiguous descriptions");
-        clarity.setGuideline(3, "Mostly clear but with some confusing elements");
-        clarity.setGuideline(4, "Clear and concise with minor improvements possible");
-        clarity.setGuideline(5, "Exceptionally clear, concise, and easy to understand");
-        
-        defaultMetrics.add(clarity);
-        
-        // Code-Documentation Alignment metric
-        Metric alignment = Metric.builder()
-                .name("Code Alignment")
-                .description("Measures how well the documentation aligns with the actual code")
-                .weight(1.0)
-                .build();
-        
-        alignment.setGuideline(1, "Documentation contradicts or misrepresents the code");
-        alignment.setGuideline(2, "Documentation partially aligns with code but has significant discrepancies");
-        alignment.setGuideline(3, "Documentation mostly aligns with code but has minor discrepancies");
-        alignment.setGuideline(4, "Documentation accurately reflects code with very minor omissions");
-        alignment.setGuideline(5, "Documentation perfectly aligns with code, including edge cases and special conditions");
-        
-        defaultMetrics.add(alignment);
-        
-        return defaultMetrics;
-    }
-    
-    /**
-     * Creates a default metrics definitions file.
-     * 
-     * @param filePath The path to save the default metrics definitions
-     * @return True if the default metrics were saved successfully
-     */
-    public boolean createDefaultMetricsFile(String filePath) {
-        try {
-            List<Metric> defaultMetrics = createDefaultMetrics();
-            
-            for (Metric metric : defaultMetrics) {
-                addMetric(metric);
-            }
-            
-            return saveMetricsToFile(filePath);
-            
-        } catch (Exception e) {
-            log.error("Error creating default metrics file: {}", e.getMessage(), e);
-            return false;
-        }
-    }
-    
-    /**
      * Gets the guidelines for all metrics as a formatted string.
      * 
      * @return The guidelines for all metrics
@@ -201,10 +123,10 @@ public class MetricsManager {
     public String getFormattedGuidelines() {
         StringBuilder sb = new StringBuilder();
         
-        sb.append("Please rate the documentation on the following metrics using a scale of 1-5:\n\n");
+        sb.append("Please rate the documentation on the following metrics using provided scale below:\n\n");
         
         for (Metric metric : getAllMetrics()) {
-            sb.append(metric.getName()).append(" (1-5):\n");
+            sb.append(metric.getName()).append(" scores:\n");
             sb.append("Description: ").append(metric.getDescription()).append("\n");
             
             for (int i = 1; i <= 5; i++) {
@@ -215,10 +137,10 @@ public class MetricsManager {
         }
         
         sb.append("For each metric, provide:\n");
-        sb.append("1. A numerical rating (1-5)\n");
+        sb.append("1. A numerical rating\n");
         sb.append("2. A brief explanation justifying your rating\n");
         sb.append("3. The guideline text that corresponds to your rating\n");
-        sb.append("4. Specific recommendations for improvement if the rating is less than 5\n");
+        sb.append("4. Specific recommendations for improvement if the rating is less than the highest score\n");
         
         return sb.toString();
     }
