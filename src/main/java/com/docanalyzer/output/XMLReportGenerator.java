@@ -157,7 +157,9 @@ public class XMLReportGenerator {
         // Basic method information
         writeSimpleElement(writer, "name", method.getName(), 6);
         writeSimpleElement(writer, "class-name", method.getClassName(), 6);
-        writeSimpleElement(writer, "package-name", method.getPackageName(), 6);
+        if(!method.getPackageName().isEmpty()){
+            writeSimpleElement(writer, "package-name", method.getPackageName(), 6);
+        }
         writeSimpleElement(writer, "file-path", method.getFilePath(), 6);
         writeSimpleElement(writer, "signature", method.getSignature(), 6);
         writeSimpleElement(writer, "return-type", method.getReturnType(), 6);
