@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Documentation Analyzer - Logging Documentation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+        .overview {
+            background-color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+        }
+        .overview h2 {
+            color: #34495e;
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #34495e;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #e8f4f8;
+        }
+        .log-level {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+        }
+        .debug { background-color: #3498db; }
+        .info { background-color: #2ecc71; }
+        .warn { background-color: #f39c12; }
+        .error { background-color: #e74c3c; }
+        .package {
+            font-family: 'Courier New', monospace;
+            background-color: #ecf0f1;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .log-message {
+            font-family: 'Courier New', monospace;
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            max-width: 400px;
+            word-wrap: break-word;
+        }
+        .purpose {
+            max-width: 300px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+            color: white;
+            min-width: 100px;
+        }
+        .stat-debug { background-color: #3498db; }
+        .stat-info { background-color: #2ecc71; }
+        .stat-warn { background-color: #f39c12; }
+        .stat-error { background-color: #e74c3c; }
+        .config-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .config-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .config-code {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+        .filter-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .filter-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            background-color: white;
+        }
+        .filter-btn.active {
+            color: white !important;
+        }
+        .filter-btn.debug {
+            border-color: #3498db;
+            color: #3498db;
+        }
+        .filter-btn.debug.active {
+            background-color: #3498db;
+        }
+        .filter-btn.info {
+            border-color: #2ecc71;
+            color: #2ecc71;
+        }
+        .filter-btn.info.active {
+            background-color: #2ecc71;
+        }
+        .filter-btn.warn {
+            border-color: #f39c12;
+            color: #f39c12;
+        }
+        .filter-btn.warn.active {
+            background-color: #f39c12;
+        }
+        .filter-btn.error {
+            border-color: #e74c3c;
+            color: #e74c3c;
+        }
+        .filter-btn.error.active {
+            background-color: #e74c3c;
+        }
+        .filter-btn.all {
+            border-color: #34495e;
+            color: #34495e;
+        }
+        .filter-btn.all.active {
+            background-color: #34495e;
+        }
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .hidden {
+            display: none !important;
+        }
+        .filter-count {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Documentation Analyzer</h1>
+        <p class="subtitle">Logging Documentation & Debug Information</p>
+        
+        <div class="overview">
+            <h2>Logging Overview</h2>
+            <p>This documentation provides a comprehensive overview of all logging statements in the AI Documentation Analyzer tool. The application uses SLF4J with Logback for logging, configured to output to both console and rotating log files.</p>
+            
+            <div class="stats">
+                <div class="stat-box stat-debug">
+                    <h3>12</h3>
+                    <p>DEBUG</p>
+                </div>
+                <div class="stat-box stat-info">
+                    <h3>19</h3>
+                    <p>INFO</p>
+                </div>
+                <div class="stat-box stat-warn">
+                    <h3>11</h3>
+                    <p>WARN</p>
+                </div>
+                <div class="stat-box stat-error">
+                    <h3>29</h3>
+                    <p>ERROR</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="config-section">
+            <h3>Logging Configuration</h3>
+            <p>The logging is configured via <code>src/main/resources/logback.xml</code>:</p>
+            <div class="config-code">
+&lt;configuration&gt;
+    &lt;!-- Console and File appenders configured --&gt;
+    &lt;root level="INFO"&gt;
+        &lt;appender-ref ref="CONSOLE" /&gt;
+        &lt;appender-ref ref="FILE" /&gt;
+    &lt;/root&gt;
+    
+    &lt;!-- Package-specific logging levels --&gt;
+    &lt;logger name="com.docanalyzer" level="INFO" /&gt;
+    &lt;logger name="org.apache.http" level="WARN" /&gt;
+    &lt;logger name="com.github.javaparser" level="WARN" /&gt;
+&lt;/configuration&gt;
+            </div>
+            <p><strong>Log File Location:</strong> <code>logs/docanalyzer.log</code> (with daily rotation, 30-day retention)</p>
+        </div>
+
+        <div class="filter-section">
+            <h3>Filter by Log Level</h3>
+            <div class="filter-buttons">
+                <button class="filter-btn all active" onclick="filterLogs('all')">All (71)</button>
+                <button class="filter-btn debug" onclick="filterLogs('debug')">DEBUG (12)</button>
+                <button class="filter-btn info" onclick="filterLogs('info')">INFO (19)</button>
+                <button class="filter-btn warn" onclick="filterLogs('warn')">WARN (11)</button>
+                <button class="filter-btn error" onclick="filterLogs('error')">ERROR (29)</button>
+            </div>
+            <div class="filter-count" id="filterCount">Showing all 71 log entries</div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Log Level</th>
+                    <th>Package/Class</th>
+                    <th>Purpose of Logging</th>
+                    <th>Log Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- DEBUG Level Logs -->
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.ai.ResponseParser</span></td>
+                    <td class="purpose">API Response Debugging</td>
+                    <td class="log-message">Response: {}</td>
+                </tr>
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.ai.ResponseParser</span></td>
+                    <td class="purpose">Metric Parsing Progress</td>
+                    <td class="log-message">Found metric #{}: '{}' with score {}</td>
+                </tr>
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.ai.ResponseParser</span></td>
+                    <td class="purpose">Justification Extraction</td>
+                    <td class="log-message">Found justification for '{}': {}</td>
+                </tr>
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.ai.ResponseParser</span></td>
+                    <td class="purpose">Metric Validation Success</td>
+                    <td class="log-message">Successfully validated and added metric '{}' with score {}</td>
+                </tr>
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.ai.ResponseParser</span></td>
+                    <td class="purpose">Parsing Summary</td>
+                    <td class="log-message">Total metrics found: {}</td>
+                </tr>
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.ai.ResponseParser</span></td>
+                    <td class="purpose">Method Evaluation Debugging</td>
+                    <td class="log-message">Method evaluation: {}</td>
+                </tr>
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.ai.PromptGenerator</span></td>
+                    <td class="purpose">Prompt Generation Statistics</td>
+                    <td class="log-message">Generated prompt with {} methods, {} characters</td>
+                </tr>
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.metrics.MetricsValidator</span></td>
+                    <td class="purpose">Validation Success Confirmation</td>
+                    <td class="log-message">Validation successful for metric '{}' with score {}</td>
+                </tr>
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.config.Configuration</span></td>
+                    <td class="purpose">Environment Variable Substitution</td>
+                    <td class="log-message">Substituted environment variable {} in configuration</td>
+                </tr>
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.ai.AnthropicClient</span></td>
+                    <td class="purpose">API Request/Response Debugging</td>
+                    <td class="log-message">Raw API response: {}</td>
+                </tr>
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.ai.AnthropicClient</span></td>
+                    <td class="purpose">Prompt Debugging</td>
+                    <td class="log-message">{prompt}</td>
+                </tr>
+                <tr data-level="debug">
+                    <td><span class="log-level debug">DEBUG</span></td>
+                    <td><span class="package">com.docanalyzer.parser.JavadocParser</span></td>
+                    <td class="purpose">Parameter Documentation Status</td>
+                    <td class="log-message">Parameter '{}' is not documented in Javadoc</td>
+                </tr>
+
+                <!-- INFO Level Logs -->
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.batch.BatchProcessor</span></td>
+                    <td class="purpose">Initialization Status</td>
+                    <td class="log-message">BatchProcessor initialized with metrics validation enabled</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.batch.BatchProcessor</span></td>
+                    <td class="purpose">Processing Overview</td>
+                    <td class="log-message">Processing {} methods in {} batches</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.batch.BatchProcessor</span></td>
+                    <td class="purpose">Progress Tracking</td>
+                    <td class="log-message">Processed {}/{} methods</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Application Startup</td>
+                    <td class="log-message">Starting Documentation Analyzer</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Argument Parsing</td>
+                    <td class="log-message">Parsed arguments - Config path: {}, Input paths: {}</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Configuration Loading</td>
+                    <td class="log-message">Loaded configuration from {}</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Default Configuration Usage</td>
+                    <td class="log-message">Using default configuration</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">File/Directory Processing</td>
+                    <td class="log-message">Parsing directory: {}</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">File Processing</td>
+                    <td class="log-message">Parsing file: {}</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Method Extraction Summary</td>
+                    <td class="log-message">Extracted {} methods from {} input paths</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Javadoc Filtering Results</td>
+                    <td class="log-message">Filtered {} methods with Javadoc from {} total methods (skipped {} methods without Javadoc)</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Analysis Completion</td>
+                    <td class="log-message">Analysis complete. Report generated at: {}</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.config.Configuration</span></td>
+                    <td class="purpose">Directory Creation</td>
+                    <td class="log-message">Created output directory: {}</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.metrics.MetricsManager</span></td>
+                    <td class="purpose">Metric Loading Progress</td>
+                    <td class="log-message">Loaded metric: {}</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.metrics.MetricsManager</span></td>
+                    <td class="purpose">Example Loading</td>
+                    <td class="log-message">Loaded best example</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.metrics.MetricsManager</span></td>
+                    <td class="purpose">Example Loading</td>
+                    <td class="log-message">Loaded worst example</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.metrics.MetricsManager</span></td>
+                    <td class="purpose">Metrics Loading Summary</td>
+                    <td class="log-message">Loaded {} metrics from {}</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.metrics.MetricsManager</span></td>
+                    <td class="purpose">Metrics Saving</td>
+                    <td class="log-message">Saved {} metrics to {}</td>
+                </tr>
+                <tr data-level="info">
+                    <td><span class="log-level info">INFO</span></td>
+                    <td><span class="package">com.docanalyzer.output.XMLReportGenerator</span></td>
+                    <td class="purpose">Report Generation Success</td>
+                    <td class="log-message">XML report generated successfully: {}</td>
+                </tr>
+
+                <!-- WARN Level Logs -->
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.ai.ResponseParser</span></td>
+                    <td class="purpose">Method Count Mismatch</td>
+                    <td class="log-message">Expected {} methods in response, but found {}</td>
+                </tr>
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.ai.ResponseParser</span></td>
+                    <td class="purpose">Metric Validation Failure</td>
+                    <td class="log-message">Metric validation failed for '{}' with score {}: {}</td>
+                </tr>
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.ai.ResponseParser</span></td>
+                    <td class="purpose">Validation Unavailable</td>
+                    <td class="log-message">Metric validation is not available!!</td>
+                </tr>
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.batch.BatchProcessor</span></td>
+                    <td class="purpose">Validator Initialization Failure</td>
+                    <td class="log-message">Failed to initialize metrics validator: {}. Proceeding without validation.</td>
+                </tr>
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.batch.BatchProcessor</span></td>
+                    <td class="purpose">Token Limit Exceeded</td>
+                    <td class="log-message">Method {} exceeds token limit ({} tokens). It will be processed individually with possible truncation.</td>
+                </tr>
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Non-Java File Skipping</td>
+                    <td class="log-message">Skipping non-Java file: {}</td>
+                </tr>
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.config.Configuration</span></td>
+                    <td class="purpose">Environment Variable Not Found</td>
+                    <td class="log-message">Environment variable {} not found, keeping original value</td>
+                </tr>
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.config.Configuration</span></td>
+                    <td class="purpose">Invalid Integer Configuration</td>
+                    <td class="log-message">Invalid integer value for {}: {}. Using default: {}</td>
+                </tr>
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.config.Configuration</span></td>
+                    <td class="purpose">Invalid Double Configuration</td>
+                    <td class="log-message">Invalid double value for {}: {}. Using default: {}</td>
+                </tr>
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.util.TokenCounter</span></td>
+                    <td class="purpose">Text Truncation</td>
+                    <td class="log-message">Text truncated from {} to {} characters to fit token limit</td>
+                </tr>
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.output.XMLReportGenerator</span></td>
+                    <td class="purpose">Empty Method List</td>
+                    <td class="log-message">No methods provided for report generation</td>
+                </tr>
+                <tr data-level="warn">
+                    <td><span class="log-level warn">WARN</span></td>
+                    <td><span class="package">com.docanalyzer.ai.AnthropicClient</span></td>
+                    <td class="purpose">API Key Missing</td>
+                    <td class="log-message">Anthropic API key is not set. API requests will fail.</td>
+                </tr>
+
+                <!-- ERROR Level Logs -->
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.ai.ResponseParser</span></td>
+                    <td class="purpose">Batch Response Parsing Error</td>
+                    <td class="log-message">Error parsing batch response: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.ai.ResponseParser</span></td>
+                    <td class="purpose">Method Evaluation Parsing Error</td>
+                    <td class="log-message">Error parsing method evaluation: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.batch.BatchProcessor</span></td>
+                    <td class="purpose">Missing Method Result</td>
+                    <td class="log-message">No result found for method {} in batch</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.batch.BatchProcessor</span></td>
+                    <td class="purpose">Batch Processing Error</td>
+                    <td class="log-message">Error processing batch: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Metrics Loading Failure</td>
+                    <td class="log-message">Could not load metrics file!!!</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Input Path Validation</td>
+                    <td class="log-message">Input path does not exist: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">No Javadoc Methods Found</td>
+                    <td class="log-message">No methods with Javadoc found in the specified input paths</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Report Generation Failure</td>
+                    <td class="log-message">Failed to generate report</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.Main</span></td>
+                    <td class="purpose">Application Runtime Error</td>
+                    <td class="log-message">Error running documentation analyzer: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.config.Configuration</span></td>
+                    <td class="purpose">Configuration Loading Error</td>
+                    <td class="log-message">Error loading configuration from {}: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.config.Configuration</span></td>
+                    <td class="purpose">Directory Creation Error</td>
+                    <td class="log-message">Error creating output directory {}: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.metrics.MetricsManager</span></td>
+                    <td class="purpose">Metrics File Not Found</td>
+                    <td class="log-message">Metrics definitions file not found: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.metrics.MetricsManager</span></td>
+                    <td class="purpose">Invalid Metrics Format</td>
+                    <td class="log-message">Invalid metrics definitions file format: 'metrics' array not found</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.metrics.MetricsManager</span></td>
+                    <td class="purpose">Metrics Loading Error</td>
+                    <td class="log-message">Error loading metrics definitions: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.metrics.MetricsManager</span></td>
+                    <td class="purpose">Metrics Saving Error</td>
+                    <td class="log-message">Error saving metrics definitions: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.output.XMLReportGenerator</span></td>
+                    <td class="purpose">Report Generation Error</td>
+                    <td class="log-message">Failed to generate XML report: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.ai.AnthropicClient</span></td>
+                    <td class="purpose">API Request Failure</td>
+                    <td class="log-message">API request failed with status code {}: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.ai.AnthropicClient</span></td>
+                    <td class="purpose">Unexpected API Response</td>
+                    <td class="log-message">Unexpected API response format: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.ai.AnthropicClient</span></td>
+                    <td class="purpose">API Communication Error</td>
+                    <td class="log-message">Error sending request to Anthropic API: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.parser.JavaParser</span></td>
+                    <td class="purpose">File Not Found</td>
+                    <td class="log-message">File not found: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.parser.JavaParser</span></td>
+                    <td class="purpose">File Reading Error</td>
+                    <td class="log-message">Error reading file {}: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.parser.JavaParser</span></td>
+                    <td class="purpose">File Parsing Error</td>
+                    <td class="log-message">Error parsing file {}: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.parser.JavaParser</span></td>
+                    <td class="purpose">Directory Validation</td>
+                    <td class="log-message">Directory does not exist or is not a directory: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.parser.JavadocParser</span></td>
+                    <td class="purpose">Javadoc Parsing Error</td>
+                    <td class="log-message">Error parsing Javadoc: {}</td>
+                </tr>
+                <tr data-level="error">
+                    <td><span class="log-level error">ERROR</span></td>
+                    <td><span class="package">com.docanalyzer.parser.MethodExtractor</span></td>
+                    <td class="purpose">Method Extraction Error</td>
+                    <td class="log-message">Error extracting method: {}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="overview" style="margin-top: 30px;">
+            <h2>Usage Notes</h2>
+            <ul>
+                <li><strong>DEBUG logs:</strong> Enable by setting log level to DEBUG in logback.xml or via system property <code>-Droot.level=DEBUG</code></li>
+                <li><strong>Log placeholders:</strong> <code>{}</code> represents dynamic values that will be substituted at runtime</li>
+                <li><strong>Log file rotation:</strong> Daily rotation with 30-day retention policy</li>
+                <li><strong>Console output:</strong> All logs are also displayed in the console during execution</li>
+                <li><strong>Third-party libraries:</strong> Apache HTTP Client and JavaParser logs are set to WARN level to reduce noise</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function filterLogs(level) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Add active class to clicked button
+            document.querySelector(`.filter-btn.${level}`).classList.add('active');
+            
+            // Get all table rows (excluding header)
+            const rows = document.querySelectorAll('tbody tr');
+            let visibleCount = 0;
+            
+            rows.forEach(row => {
+                if (level === 'all') {
+                    row.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    const rowLevel = row.getAttribute('data-level');
+                    if (rowLevel === level) {
+                        row.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        row.classList.add('hidden');
+                    }
+                }
+            });
+            
+            // Update counter
+            const filterCount = document.getElementById('filterCount');
+            const levelText = level === 'all' ? 'all' : level.toUpperCase();
+            filterCount.textContent = `Showing ${visibleCount} ${levelText} log entries`;
+        }
+        
+        // Add data-level attributes to rows that don't have them
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                if (!row.getAttribute('data-level')) {
+                    const logLevelSpan = row.querySelector('.log-level');
+                    if (logLevelSpan) {
+                        if (logLevelSpan.classList.contains('debug')) {
+                            row.setAttribute('data-level', 'debug');
+                        } else if (logLevelSpan.classList.contains('info')) {
+                            row.setAttribute('data-level', 'info');
+                        } else if (logLevelSpan.classList.contains('warn')) {
+                            row.setAttribute('data-level', 'warn');
+                        } else if (logLevelSpan.classList.contains('error')) {
+                            row.setAttribute('data-level', 'error');
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
