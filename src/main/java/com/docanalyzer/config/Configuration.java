@@ -61,6 +61,26 @@ public class Configuration {
     private double temperature;
     
     /**
+     * The maximum number of retry attempts for API requests.
+     */
+    private int maxRetryAttempts;
+    
+    /**
+     * The initial delay in milliseconds before the first retry.
+     */
+    private long initialRetryDelayMs;
+    
+    /**
+     * The maximum delay in milliseconds between retries.
+     */
+    private long maxRetryDelayMs;
+    
+    /**
+     * The multiplier for exponential backoff.
+     */
+    private double retryBackoffMultiplier;
+    
+    /**
      * Loads configuration from a properties file.
      * 
      * @param configPath The path to the properties file
