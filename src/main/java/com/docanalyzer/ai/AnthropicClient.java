@@ -72,14 +72,14 @@ public class AnthropicClient {
             // Create messages array with system and user messages
             requestBody.putArray("messages")
                     .add(createMessage( prompt));
-            
+            log.debug(prompt);
             // Set request body
             httpPost.setEntity(new StringEntity(requestBody.toString(), ContentType.APPLICATION_JSON));
             
             // Execute request
             try (CloseableHttpResponse response = httpClient.execute(httpPost)) {
                 String responseBody = EntityUtils.toString(response.getEntity());
-                
+                log.debug(responseBody);
                 // Check for errors
                 int statusCode = response.getCode();
                 if (statusCode != 200) {
