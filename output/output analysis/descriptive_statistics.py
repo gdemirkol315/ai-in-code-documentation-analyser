@@ -17,11 +17,11 @@ def load_survey_data():
     """Load and process survey data from CSV file."""
     try:
         # Load the survey data
-        df = pd.read_csv('survey-result.csv', sep='\t')
+        df = pd.read_csv('survey-result.txt', sep='\t')
         print(f"Loaded survey data with {len(df)} responses and {len(df.columns)} questions")
         return df
     except FileNotFoundError:
-        print("Error: survey-result.csv not found")
+        print("Error: survey-result.txt not found")
         return None
     except Exception as e:
         print(f"Error loading survey data: {e}")
@@ -715,13 +715,7 @@ def main():
     # Create human response distribution visualizations
     print(f"\nCreating human response distribution visualizations...")
     create_human_response_distribution_stacked_bars(survey_df)
-    
-    print(f"Creating human response distribution heatmaps...")
-    create_human_response_distribution_heatmap(survey_df)
-    
-    print(f"Creating human response distribution box plots...")
-    create_human_response_box_plots(survey_df)
-    
+
     # Calculate and save human response statistics
     print(f"Calculating human response distribution statistics...")
     human_stats = calculate_human_response_statistics(survey_df)
