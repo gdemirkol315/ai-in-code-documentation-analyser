@@ -238,6 +238,165 @@ class StatisticalAnalyzer:
             'normality_assumed': shapiro_p >= 0.05
         }
 
+    def perform_dimension_wise_t_tests(self) -> Dict:
+        """
+        Perform paired t-tests for each quality dimension (comprehensibility, completeness, alignment).
+        Tests the hypothesis: "There is a statistically significant difference between AI-based and 
+        human ratings for at least one quality dimension."
+
+        Returns:
+            Dict: Analysis results for each dimension and overall conclusion
+        """
+        if self.df is None:
+            raise ValueError("No data loaded.")
+
+        # Extract data for each dimension
+        # Comprehensibility: questions ending with '_1'
+        comprehensibility_mask = self.df['Question'].str.endswith('_1')
+        comp_ai = self.df[comprehensibility_mask]['AI_Result'].values
+        comp_human = self.df[comprehensibility_mask]['Average_Developer_Result'].values
+
+        # Completeness: questions ending with '_2'
+        completeness_mask = self.df['Question'].str.endswith('_2')
+        compl_ai = self.df[completeness_mask]['AI_Result'].values
+        compl_human = self.df[completeness_mask]['Average_Developer_Result'].values
+
+        # Alignment: questions ending with '_3'
+        alignment_mask = self.df['Question'].str.endswith('_3')
+        align_ai = self.df[alignment_mask]['AI_Result'].values
+        align_human = self.df[alignment_mask]['Average_Developer_Result'].values
+
+        dimensions = {
+            'comprehensibility': (comp_ai, comp_human),
+            'completeness': (compl_ai, compl_human),
+            'alignment': (align_ai, align_human)
+        }
+
+        results = {}
+        
+        for dimension, (ai_scores, human_scores) in dimensions.items():
+            # Calculate differences for normality test
+            differences = ai_scores - human_scores
+            
+            # Perform Shapiro-Wilk test for normality
+            shapiro_stat, shapiro_p = shapiro(differences)
+            
+            # Choose test based on normality assumption
+            if shapiro_p >= 0.05:
+                # Assume normality - use paired t-test
+                test_stat, p_value = ttest_rel(ai_scores, human_scores)
+                test_type = 'paired_t_test'
+            else:
+                # Assume non-normality - use Wilcoxon signed-rank test
+                test_stat, p_value = wilcoxon(ai_scores, human_scores)
+                test_type = 'wilcoxon_signed_rank'
+            
+            # Calculate mean difference and effect size
+            mean_difference = np.mean(differences)
+            cohens_d = mean_difference / np.std(differences) if np.std(differences) != 0 else 0
+            
+            # Store results for this dimension
+            results[dimension] = {
+                'test_type': test_type,
+                't_statistic': float(test_stat),
+                'p_value': float(p_value),
+                'mean_difference': float(mean_difference),
+                'cohens_d': float(cohens_d),
+                'shapiro_statistic': float(shapiro_stat),
+                'shapiro_p_value': float(shapiro_p),
+                'normality_assumed': shapiro_p >= 0.05,
+                'significant_bonferroni': p_value < BONFERRONI_ALPHA,
+                'n_pairs': len(ai_scores)
+            }
+
+        # Overall conclusion: significant if ANY dimension is significant
+        any_significant = any(results[dim]['significant_bonferroni'] for dim in results)
+        
+        results['overall'] = {
+            'hypothesis_supported': any_significant,
+            'bonferroni_alpha': BONFERRONI_ALPHA,
+            'conclusion': 'There IS a statistically significant difference between AI and human ratings for at least one quality dimension.' if any_significant else 'There is NO statistically significant difference between AI and human ratings for any quality dimension.'
+        }
+
+        return results
+
+    def print_dimension_wise_results(self) -> None:
+        """
+        Print formatted dimension-wise t-test analysis results.
+        """
+        results = self.perform_dimension_wise_t_tests()
+
+        print("\n" + "="*80)
+        print("DIMENSION-WISE T-TEST ANALYSIS")
+        print("Testing: 'There is a statistically significant difference between AI-based")
+        print("and human ratings for at least one quality dimension'")
+        print("="*80)
+
+        dimensions = ['comprehensibility', 'completeness', 'alignment']
+        dimension_names = {
+            'comprehensibility': 'Comprehensibility',
+            'completeness': 'Completeness', 
+            'alignment': 'Alignment'
+        }
+
+        for dimension in dimensions:
+            if dimension in results:
+                dim_results = results[dimension]
+                
+                print(f"\n{dimension_names[dimension].upper()} (Questions ending with '_{dimensions.index(dimension)+1}')")
+                print("-" * 60)
+                print(f"Number of paired observations: {dim_results['n_pairs']}")
+                
+                # Normality test results
+                print(f"Normality Test (Shapiro-Wilk): W = {dim_results['shapiro_statistic']:.4f}, p = {dim_results['shapiro_p_value']:.6f}")
+                print(f"Normality assumed: {dim_results['normality_assumed']}")
+                
+                # Test results
+                test_name = "Paired t-test" if dim_results['test_type'] == 'paired_t_test' else "Wilcoxon signed-rank test"
+                print(f"Test used: {test_name}")
+                print(f"Test statistic: {dim_results['t_statistic']:.4f}")
+                print(f"P-value: {dim_results['p_value']:.6f}")
+                print(f"Mean difference (AI - Human): {dim_results['mean_difference']:.4f}")
+                
+                # Effect size
+                abs_d = abs(dim_results['cohens_d'])
+                if abs_d < 0.2:
+                    effect_size = "negligible"
+                elif abs_d < 0.5:
+                    effect_size = "small"
+                elif abs_d < 0.8:
+                    effect_size = "medium"
+                else:
+                    effect_size = "large"
+                print(f"Cohen's d: {dim_results['cohens_d']:.4f} ({effect_size} effect size)")
+                
+                # Significance with Bonferroni correction
+                alpha = results['overall']['bonferroni_alpha']
+                if dim_results['significant_bonferroni']:
+                    print(f"Result: STATISTICALLY SIGNIFICANT at α = {alpha:.4f} (Bonferroni corrected)")
+                    if dim_results['mean_difference'] > 0:
+                        print("AI scores are significantly HIGHER than human scores for this dimension.")
+                    else:
+                        print("AI scores are significantly LOWER than human scores for this dimension.")
+                else:
+                    print(f"Result: NOT STATISTICALLY SIGNIFICANT at α = {alpha:.4f} (Bonferroni corrected)")
+                    print("No significant difference between AI and human scores for this dimension.")
+
+        # Overall conclusion
+        print("\n" + "="*80)
+        print("OVERALL CONCLUSION")
+        print("="*80)
+        print(f"Bonferroni-corrected significance level: α = {results['overall']['bonferroni_alpha']:.4f}")
+        print(f"Hypothesis supported: {results['overall']['hypothesis_supported']}")
+        print(f"\n{results['overall']['conclusion']}")
+        
+        # Summary of significant dimensions
+        significant_dims = [dim for dim in dimensions if dim in results and results[dim]['significant_bonferroni']]
+        if significant_dims:
+            print(f"\nSignificant dimensions: {', '.join([dimension_names[dim] for dim in significant_dims])}")
+        else:
+            print("\nNo dimensions showed statistically significant differences.")
+
     def print_paired_t_test_results(self) -> None:
         """
         Print formatted paired t-test analysis results.
@@ -486,8 +645,8 @@ def main():
         # Perform and print correlation analysis
         analyzer.print_correlation_results()
 
-        # Perform and print paired t-test analysis
-        analyzer.print_paired_t_test_results()
+        # Perform and print dimension-wise t-test analysis (NEW - answers your research question)
+        analyzer.print_dimension_wise_results()
 
         # Create visualizations
         print("\nCreating visualizations...")
