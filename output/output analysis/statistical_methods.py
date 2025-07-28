@@ -55,11 +55,41 @@ class StatisticalAnalyzer:
         print(f"Number of observations: {len(self.df)}")
         print(f"Number of variables: {len(self.df.columns)}")
 
-        print("\nFirst few rows:")
-        print(self.df.head())
-
         print("\nDescriptive statistics:")
         print(self.df[['AI_Result', 'Average_Developer_Result']].describe())
+
+        # Add per-metric descriptive statistics
+        print("\n" + "="*60)
+        print("PER-METRIC DESCRIPTIVE STATISTICS")
+        print("="*60)
+        
+        # Extract data for each metric
+        # Comprehensibility: questions ending with '_1'
+        comprehensibility_mask = self.df['Question'].str.endswith('_1')
+        comp_data = self.df[comprehensibility_mask][['AI_Result', 'Average_Developer_Result']]
+        
+        # Completeness: questions ending with '_2'
+        completeness_mask = self.df['Question'].str.endswith('_2')
+        compl_data = self.df[completeness_mask][['AI_Result', 'Average_Developer_Result']]
+        
+        # Alignment: questions ending with '_3'
+        alignment_mask = self.df['Question'].str.endswith('_3')
+        align_data = self.df[alignment_mask][['AI_Result', 'Average_Developer_Result']]
+        
+        # Display statistics for each metric
+        metrics_data = {
+            'Comprehensibility (_1)': comp_data,
+            'Completeness (_2)': compl_data,
+            'Alignment (_3)': align_data
+        }
+        
+        for metric_name, metric_data in metrics_data.items():
+            if not metric_data.empty:
+                print(f"\n{metric_name}:")
+                print(f"Number of observations: {len(metric_data)}")
+                print(metric_data.describe())
+            else:
+                print(f"\n{metric_name}: No data found")
 
         print("\nData types:")
         print(self.df.dtypes)
@@ -450,6 +480,64 @@ class StatisticalAnalyzer:
 
             print(f"Cohen's d: {cohens_d:.4f} ({effect_size} effect size)")
 
+    def perform_per_metric_correlation_analysis(self) -> Dict:
+        """
+        Perform Spearman correlation analysis for each individual metric.
+
+        Returns:
+            Dict: Analysis results for each metric
+        """
+        if self.df is None:
+            raise ValueError("No data loaded.")
+
+        # Extract data for each metric
+        # Comprehensibility: questions ending with '_1'
+        comprehensibility_mask = self.df['Question'].str.endswith('_1')
+        comp_ai = self.df[comprehensibility_mask]['AI_Result'].values
+        comp_human = self.df[comprehensibility_mask]['Average_Developer_Result'].values
+
+        # Completeness: questions ending with '_2'
+        completeness_mask = self.df['Question'].str.endswith('_2')
+        compl_ai = self.df[completeness_mask]['AI_Result'].values
+        compl_human = self.df[completeness_mask]['Average_Developer_Result'].values
+
+        # Alignment: questions ending with '_3'
+        alignment_mask = self.df['Question'].str.endswith('_3')
+        align_ai = self.df[alignment_mask]['AI_Result'].values
+        align_human = self.df[alignment_mask]['Average_Developer_Result'].values
+
+        metrics_data = {
+            'comprehensibility': (comp_ai, comp_human),
+            'completeness': (compl_ai, compl_human),
+            'alignment': (align_ai, align_human)
+        }
+
+        results = {}
+        
+        for metric_name, (ai_scores, human_scores) in metrics_data.items():
+            if len(ai_scores) > 1 and len(human_scores) > 1:
+                # Calculate Spearman's rank correlation
+                correlation, p_value = spearmanr(ai_scores, human_scores)
+                interpretation = self.interpret_correlation(correlation)
+                
+                results[metric_name] = {
+                    'correlation': correlation,
+                    'p_value': p_value,
+                    'interpretation': interpretation,
+                    'n_observations': len(ai_scores),
+                    'significant': p_value < 0.05
+                }
+            else:
+                results[metric_name] = {
+                    'correlation': np.nan,
+                    'p_value': np.nan,
+                    'interpretation': 'insufficient data',
+                    'n_observations': len(ai_scores),
+                    'significant': False
+                }
+
+        return results
+
     def print_correlation_results(self) -> None:
         """
         Print formatted correlation analysis results.
@@ -457,7 +545,7 @@ class StatisticalAnalyzer:
         results = self.perform_correlation_analysis()
 
         print("\n" + "="*60)
-        print("SPEARMAN'S RANK CORRELATION ANALYSIS")
+        print("SPEARMAN'S RANK CORRELATION ANALYSIS - OVERALL")
         print("="*60)
         print(f"Number of observations: {results['n_observations']}")
         print(f"Correlation coefficient (ρ): {results['correlation']:.4f}")
@@ -499,6 +587,76 @@ class StatisticalAnalyzer:
             ci_upper = np.tanh(z_upper)
 
             print(f"95% Confidence Interval: [{ci_lower:.4f}, {ci_upper:.4f}]")
+
+        # Add per-metric correlation analysis
+        self.print_per_metric_correlation_results()
+
+    def print_per_metric_correlation_results(self) -> None:
+        """
+        Print formatted per-metric correlation analysis results.
+        """
+        results = self.perform_per_metric_correlation_analysis()
+
+        print("\n" + "="*70)
+        print("SPEARMAN'S RANK CORRELATION ANALYSIS - PER METRIC")
+        print("="*70)
+
+        metric_names = {
+            'comprehensibility': 'Comprehensibility (_1)',
+            'completeness': 'Completeness (_2)',
+            'alignment': 'Alignment (_3)'
+        }
+
+        for metric_key, metric_name in metric_names.items():
+            if metric_key in results:
+                metric_results = results[metric_key]
+                
+                print(f"\n{metric_name.upper()}")
+                print("-" * 50)
+                print(f"Number of observations: {metric_results['n_observations']}")
+                
+                if not np.isnan(metric_results['correlation']):
+                    print(f"Correlation coefficient (ρ): {metric_results['correlation']:.4f}")
+                    print(f"P-value: {metric_results['p_value']:.6f}")
+                    print(f"Interpretation: {metric_results['interpretation']} correlation")
+
+                    # Statistical significance
+                    alpha = 0.05
+                    if metric_results['significant']:
+                        print(f"Result: STATISTICALLY SIGNIFICANT at α = {alpha}")
+                        print("The correlation is unlikely to be due to chance.")
+                    else:
+                        print(f"Result: NOT STATISTICALLY SIGNIFICANT at α = {alpha}")
+                        print("The correlation could be due to chance.")
+
+                    # Effect size interpretation
+                    abs_corr = abs(metric_results['correlation'])
+                    if abs_corr >= 0.5:
+                        effect_size = "large"
+                    elif abs_corr >= 0.3:
+                        effect_size = "medium"
+                    else:
+                        effect_size = "small"
+
+                    print(f"Effect size: {effect_size}")
+
+                    # Confidence interval (approximate)
+                    n = metric_results['n_observations']
+                    if n > 3:
+                        # Fisher's z-transformation for confidence interval
+                        z = np.arctanh(metric_results['correlation'])
+                        se = 1 / np.sqrt(n - 3)
+                        z_critical = 1.96  # for 95% CI
+
+                        z_lower = z - z_critical * se
+                        z_upper = z + z_critical * se
+
+                        ci_lower = np.tanh(z_lower)
+                        ci_upper = np.tanh(z_upper)
+
+                        print(f"95% Confidence Interval: [{ci_lower:.4f}, {ci_upper:.4f}]")
+                else:
+                    print("Insufficient data for correlation analysis")
 
     def create_scatter_plot(self, save_plot: bool = True) -> None:
         """
