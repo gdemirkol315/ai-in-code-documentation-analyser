@@ -66,3 +66,6 @@ poetry run python krippendorff_analysis.py
 
 echo "Running statistical_methods.py..."
 poetry run python statistical_methods.py
+
+echo "Running metric_independence_analysis.py..."
+poetry run python metric_independence_analysis.py
